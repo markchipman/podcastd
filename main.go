@@ -23,7 +23,7 @@ func main() {
 	}
 	for _, file := range files {
 		show := TVShow{}
-		db.FirstOrCreate(&show, TVShow{Name: file.Name()})
+		db.FirstOrCreate(&show, TVShow{Filename: file.Name()})
 		fmt.Println(file.Name(), file.Size(), "bytes")
 	}
 	d, err = os.Open(dir + string(filepath.Separator) + "movies")
@@ -39,7 +39,7 @@ func main() {
 	}
 	for _, file := range files {
 		movie := Movie{}
-		db.FirstOrCreate(&movie, Movie{Name: file.Name()})
+		db.FirstOrCreate(&movie, Movie{Filename: file.Name()})
 		fmt.Println(file.Name(), file.Size(), "bytes")
 	}
 	d, err = os.Open(dir + string(filepath.Separator) + "other")
@@ -55,7 +55,7 @@ func main() {
 	}
 	for _, file := range files {
 		other := Other{}
-		db.FirstOrCreate(&other, Other{Name: file.Name()})
+		db.FirstOrCreate(&other, Other{Filename: file.Name()})
 		fmt.Println(file.Name(), file.Size(), "bytes")
 	}
 

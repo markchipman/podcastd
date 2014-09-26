@@ -8,20 +8,61 @@ import (
 	"path/filepath"
 )
 
+type Media interface {
+	MediaTitle() string
+	MediaFilename() string
+	MediaType() string
+}
+
 type TVShow struct {
-	Name string
+	Title    string
+	Filename string
 }
 
 func (t TVShow) TableName() string {
 	return "tvshows"
 }
+func (t TVShow) MediaFilename() string {
+	return t.Filename
+}
+func (t TVShow) MediaTitle() string {
+	return t.Filename
+}
+
+func (t TVShow) MediaType() string {
+	return "tvshow"
+}
 
 type Movie struct {
-	Name string
+	Title    string
+	Filename string
+}
+
+func (m Movie) MediaFilename() string {
+	return m.Filename
+}
+func (m Movie) MediaTitle() string {
+	return m.Filename
+}
+
+func (m Movie) MediaType() string {
+	return "movie"
 }
 
 type Other struct {
-	Name string
+	Title    string
+	Filename string
+}
+
+func (o Other) MediaFilename() string {
+	return o.Filename
+}
+func (o Other) MediaTitle() string {
+	return o.Filename
+}
+
+func (o Other) MediaType() string {
+	return "other"
 }
 
 func initDB() gorm.DB {
@@ -31,7 +72,7 @@ func initDB() gorm.DB {
 		os.Exit(1)
 	}
 	db.DB()
-	db.SingularTable(true)
+	db.LogMode(true)
 	db.AutoMigrate(&TVShow{}, &Movie{}, &Other{})
 	return db
 }

@@ -1,0 +1,10 @@
+<h1>btPodcast</h1>
+
+{{range $type, $items := .}}
+<h4>{{$type}}</h4>
+<ul>
+  {{range $items}}
+  <li>{{.MediaFilename}}</li>
+  {{end}}
+</ul>
+{{end}}

@@ -1,33 +1,36 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"net/http"
-	"os"
 	"path/filepath"
 )
 
+var tmplDir = "templates" + string(filepath.Separator)
+var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
+
 func home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "<h1>btPodcast</h1>")
-	fmt.Fprint(w, "<h4>TV Shows</h4>")
+	data := make(map[string][]Media)
 	var tvshows []TVShow
 	db.Find(&tvshows)
-	for _, show := range tvshows {
-		fmt.Fprint(w, show.Name)
-		fmt.Fprint(w, "<br>")
+	data["TV Shows"] = make([]Media, len(tvshows))
+	for i, v := range tvshows {
+		data["TV Shows"][i] = Media(v)
 	}
-	fmt.Fprint(w, "<h4>Movies</h4>")
 	var movies []Movie
 	db.Find(&movies)
-	for _, movie := range movies {
-		fmt.Fprint(w, movie.Name)
-		fmt.Fprint(w, "<br>")
+	data["Movies"] = make([]Media, len(movies))
+	for i, v := range movies {
+		data["Movies"][i] = Media(v)
 	}
-	fmt.Fprint(w, "<h4>Other</h4>")
 	var other []Other
 	db.Find(&other)
-	for _, file := range other {
-		fmt.Fprint(w, file.Name)
-		fmt.Fprint(w, "<br>")
+	data["Other Media"] = make([]Media, len(other))
+	for i, v := range other {
+		data["Other Media"][i] = Media(v)
+	}
+	err := templates.ExecuteTemplate(w, "home.html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
