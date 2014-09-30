@@ -8,12 +8,6 @@ import (
 	"path/filepath"
 )
 
-type Media interface {
-	MediaTitle() string
-	MediaFilename() string
-	MediaType() string
-}
-
 type TVShow struct {
 	Title    string
 	Filename string
@@ -22,47 +16,15 @@ type TVShow struct {
 func (t TVShow) TableName() string {
 	return "tvshows"
 }
-func (t TVShow) MediaFilename() string {
-	return t.Filename
-}
-func (t TVShow) MediaTitle() string {
-	return t.Filename
-}
-
-func (t TVShow) MediaType() string {
-	return "tvshow"
-}
 
 type Movie struct {
 	Title    string
 	Filename string
 }
 
-func (m Movie) MediaFilename() string {
-	return m.Filename
-}
-func (m Movie) MediaTitle() string {
-	return m.Filename
-}
-
-func (m Movie) MediaType() string {
-	return "movie"
-}
-
 type Other struct {
 	Title    string
 	Filename string
-}
-
-func (o Other) MediaFilename() string {
-	return o.Filename
-}
-func (o Other) MediaTitle() string {
-	return o.Filename
-}
-
-func (o Other) MediaType() string {
-	return "other"
 }
 
 func initDB() gorm.DB {
