@@ -12,7 +12,7 @@ brew install go
 echo "export GOROOT=/usr/local/opt/go/libexec" >> .bash_profile
 echo "export GOPATH=~/.go" >> .bash_profile
 echo "export PATH=${GOPATH}/bin:${PATH}" >> .bash_profile
-go get github.com/pilu/fresh
+go get -u github.com/pilu/fresh
 cd /path/to/btpodcast
 fresh
 ```

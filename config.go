@@ -33,9 +33,8 @@ func initDirectory() string {
 		usr, _ := user.Current()
 		home = strings.Replace(home, "~/", usr.HomeDir+string(filepath.Separator), 1)
 	}
-	os.MkdirAll(home+string(filepath.Separator)+"tvshows", 0700)
-	os.MkdirAll(home+string(filepath.Separator)+"movies", 0700)
-	os.MkdirAll(home+string(filepath.Separator)+"other", 0700)
+	os.MkdirAll(home+"tvshows", 0700)
+	os.MkdirAll(home+"movies", 0700)
 	return home
 }
 

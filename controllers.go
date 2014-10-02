@@ -10,16 +10,26 @@ var tmplDir = "templates" + string(filepath.Separator)
 var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
 
 func home(w http.ResponseWriter, r *http.Request) {
-	var tvshows []TVShow
-	db.Find(&tvshows)
 	var movies []Movie
 	db.Find(&movies)
-	var others []Other
-	db.Find(&others)
+	var shows []string
+	rows, _ := db.Raw("SELECT DISTINCT title FROM tvshows").Rows()
+	defer rows.Close()
+	for rows.Next() {
+		var title string
+		rows.Scan(&title)
+		shows = append(shows, title)
+	}
+	var tvshows map[string]interface{}
+	tvshows = make(map[string]interface{})
+	for _, show := range shows {
+		var episodes []TVShow
+		db.Where("title = ?", show).Find(&episodes)
+		tvshows[show] = episodes
+	}
 	data := map[string]interface{}{
-		"tvshows": tvshows,
 		"movies":  movies,
-		"others":  others,
+		"tvshows": tvshows,
 	}
 	err := templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
