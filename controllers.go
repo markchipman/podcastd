@@ -13,7 +13,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	var movies []Movie
 	db.Find(&movies)
 	var shows []string
-	rows, _ := db.Raw("SELECT DISTINCT title FROM tvshows").Rows()
+	rows, _ := db.Raw("SELECT DISTINCT show_title FROM tvshows").Rows()
 	defer rows.Close()
 	for rows.Next() {
 		var title string
@@ -24,7 +24,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	tvshows = make(map[string]interface{})
 	for _, show := range shows {
 		var episodes []TVShow
-		db.Where("title = ?", show).Find(&episodes)
+		db.Where("show_title = ?", show).Find(&episodes)
 		tvshows[show] = episodes
 	}
 	data := map[string]interface{}{

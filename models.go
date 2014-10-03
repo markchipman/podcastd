@@ -18,13 +18,14 @@ type Movie struct {
 }
 
 type TVShow struct {
-	Title     string
-	Season    int
-	Episode   int
-	Aired     time.Time
-	Filename  string
-	Size      int
-	Timestamp time.Time
+	ShowTitle    string
+	EpisodeTitle string
+	Season       int
+	Episode      int
+	Aired        time.Time
+	Filename     string
+	Size         int
+	Timestamp    time.Time
 }
 
 func (t TVShow) TableName() string {
@@ -47,19 +48,20 @@ var db = initDB()
 
 func updateDB() {
 	timestamp := time.Now()
+
 	d, _ := os.Open(dir + "movies")
 	defer d.Close()
 	files, _ := d.Readdir(-1)
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".m4v" {
 			movie := Movie{}
-			db.FirstOrCreate(&movie, Movie{
-				Filename:  file.Name(),
-				Size:      int(file.Size()) / 1024 / 1024,
-				Timestamp: timestamp,
-			})
+			db.Where(Movie{
+				Filename: file.Name(),
+				Size:     int(file.Size()) / 1024 / 1024,
+			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 		}
 	}
+
 	d, _ = os.Open(dir + "tvshows")
 	defer d.Close()
 	files, _ = d.Readdir(-1)
@@ -71,12 +73,11 @@ func updateDB() {
 			for _, episode := range episodes {
 				if filepath.Ext(episode.Name()) == ".m4v" {
 					show := TVShow{}
-					db.FirstOrCreate(&show, TVShow{
-						Title:     file.Name(),
+					db.Where(TVShow{
+						ShowTitle: file.Name(),
 						Filename:  episode.Name(),
 						Size:      int(episode.Size()) / 1024 / 1024,
-						Timestamp: timestamp,
-					})
+					}).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
 				}
 			}
 		}
