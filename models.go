@@ -13,7 +13,7 @@ type Movie struct {
 	Title     string
 	Year      int
 	Filename  string
-	Size      int
+	Size      int64
 	Timestamp time.Time
 }
 
@@ -24,7 +24,7 @@ type TVShow struct {
 	Episode      int
 	Aired        time.Time
 	Filename     string
-	Size         int
+	Size         int64
 	Timestamp    time.Time
 }
 
@@ -57,7 +57,7 @@ func updateDB() {
 			movie := Movie{}
 			db.Where(Movie{
 				Filename: file.Name(),
-				Size:     int(file.Size()) / 1024 / 1024,
+				Size:     file.Size(),
 			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 		}
 	}
@@ -76,10 +76,14 @@ func updateDB() {
 					db.Where(TVShow{
 						ShowTitle: file.Name(),
 						Filename:  episode.Name(),
-						Size:      int(episode.Size()) / 1024 / 1024,
+						Size:      episode.Size(),
 					}).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
 				}
 			}
 		}
 	}
+
+	// Remove records from database that were not found
+	db.Where("timestamp <> ?", timestamp).Delete(Movie{})
+	db.Where("timestamp <> ?", timestamp).Delete(TVShow{})
 }
