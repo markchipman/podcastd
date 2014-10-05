@@ -12,9 +12,14 @@ import (
 type Movie struct {
 	Title     string
 	Year      int
+	Added     time.Time
 	Filename  string
 	Size      int64
 	Timestamp time.Time
+}
+
+func (m Movie) PubDate() string {
+	return m.Added.Format(time.RFC1123)
 }
 
 type TVShow struct {
@@ -47,7 +52,7 @@ func initDB() gorm.DB {
 var db = initDB()
 
 func updateDB() {
-	timestamp := time.Now()
+	timestamp := time.Now().Local()
 
 	d, _ := os.Open(dir + "movies")
 	defer d.Close()
@@ -61,6 +66,8 @@ func updateDB() {
 			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 		}
 	}
+	//db.Table("movies").Where("added < '1900-01-01'").Updates(Movie{Added: timestamp})
+	db.Exec("UPDATE movies SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 
 	d, _ = os.Open(dir + "tvshows")
 	defer d.Close()
