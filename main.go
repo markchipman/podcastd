@@ -8,6 +8,7 @@ import (
 func main() {
 	initDirectory()
 	updateDB()
+	watchDownloads()
 	http.HandleFunc("/", home)
 	http.HandleFunc("/rss/movies", MoviesRSS)
 	fs := http.FileServer(http.Dir(dir))
