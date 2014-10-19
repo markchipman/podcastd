@@ -48,6 +48,7 @@ func MoviesRSS(w http.ResponseWriter, r *http.Request) {
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
 		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
 		"movies":     movies,
 	}
 	err := xml.ExecuteTemplate(w, "movies.xml", data)

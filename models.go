@@ -66,7 +66,6 @@ func updateDB() {
 			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 		}
 	}
-	//db.Table("movies").Where("added < '1900-01-01'").Updates(Movie{Added: timestamp})
 	db.Exec("UPDATE movies SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 
 	d, _ = os.Open(dir + "tvshows")

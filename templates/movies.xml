@@ -8,13 +8,15 @@
     <itunes:image href="http://www.yourserver.com/YourPodcastPicture.jpg" />
     <pubDate>{{.lastUpdate}}</pubDate>
 
+    {{if $host := .host}}
     {{range .movies}}
     <item>
         <title>{{.Filename}}</title>
         <description> A description of your podcast episode </description>
         <pubDate>{{.PubDate}}</pubDate>
-        <enclosure url="/files/movies/{{.Filename}}" length="{{.Size}}" type="video/mp4" />
+        <enclosure url="http://{{$host}}/files/movies/{{.Filename}}" length="{{.Size}}" type="video/mp4" />
     </item>
+    {{end}}
     {{end}}
 </channel>
 </rss>

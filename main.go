@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-	initDirectory()
 	updateDB()
 	watchDownloads()
 	http.HandleFunc("/", home)
@@ -15,3 +14,5 @@ func main() {
 	http.Handle("/files/", http.StripPrefix("/files/", fs))
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }
+
+//HandBrakeCLI -i test.avi -o output.m4v --preset="AppleTV 2"
