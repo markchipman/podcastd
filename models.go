@@ -6,15 +6,18 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"time"
 )
 
 type Movie struct {
+	Id        int
+	Filename  string
+	Size      int64
 	Title     string
 	Year      int
 	Added     time.Time
-	Filename  string
-	Size      int64
 	Timestamp time.Time
 }
 
@@ -23,18 +26,31 @@ func (m Movie) PubDate() string {
 }
 
 type TVShow struct {
-	ShowTitle    string
-	EpisodeTitle string
-	Season       int
-	Episode      int
-	Aired        time.Time
+	Id           int
 	Filename     string
 	Size         int64
+	ShowTitle    string
+	Season       int
+	Episode      int
+	EpisodeTitle string
+	EpisodeDesc  string
+	Aired        time.Time
 	Timestamp    time.Time
 }
 
 func (t TVShow) TableName() string {
 	return "tvshows"
+}
+
+func (t *TVShow) Parse() {
+	re := regexp.MustCompile("S[0-9]{2}E[0-9]{2}")
+	fmt.Println(t.Filename)
+	info := re.FindString(t.Filename)
+	fmt.Println(info)
+	t.Season, _ = strconv.Atoi(info[1:3])
+	fmt.Println(t.Season)
+	t.Episode, _ = strconv.Atoi(info[5:])
+	fmt.Println(t.Episode)
 }
 
 func initDB() gorm.DB {
@@ -44,7 +60,7 @@ func initDB() gorm.DB {
 		os.Exit(1)
 	}
 	db.DB()
-	//db.LogMode(true)
+	db.LogMode(true)
 	db.AutoMigrate(&Movie{}, &TVShow{})
 	return db
 }
@@ -78,12 +94,13 @@ func updateDB() {
 			episodes, _ := e.Readdir(-1)
 			for _, episode := range episodes {
 				if filepath.Ext(episode.Name()) == ".m4v" {
-					show := TVShow{}
-					db.Where(TVShow{
+					show := TVShow{
 						ShowTitle: file.Name(),
 						Filename:  episode.Name(),
 						Size:      episode.Size(),
-					}).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
+					}
+					show.Parse()
+					db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
 				}
 			}
 		}
