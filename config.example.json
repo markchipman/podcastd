@@ -1,4 +1,7 @@
 {
+    "Username": "user",
+    "Password": "pass",
+
     "Port": 8080,
 
     "Database": "~/.podcastd.sqlite",

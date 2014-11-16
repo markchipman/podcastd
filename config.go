@@ -9,6 +9,8 @@ import (
 )
 
 type Config struct {
+	Username string
+	Password string
 	Port     int
 	Database string
 	Movies   []string
