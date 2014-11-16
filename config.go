@@ -13,10 +13,10 @@ type Config struct {
 	Password string
 	Port     int
 	Database string
-	Movies   []string
-	TVShows  []string
-	Audio    []string
-	Video    []string
+	Movies   string
+	TVShows  string
+	Audio    string
+	Video    string
 }
 
 func loadConfigFile() Config {
@@ -31,18 +31,10 @@ func loadConfigFile() Config {
 	// Convert tildes (~) in config paths to user home directory
 	usr, _ := user.Current()
 	config.Database = strings.Replace(config.Database, "~", usr.HomeDir, 1)
-	for i, _ := range config.Movies {
-		config.Movies[i] = strings.Replace(config.Movies[i], "~", usr.HomeDir, 1)
-	}
-	for i, _ := range config.TVShows {
-		config.TVShows[i] = strings.Replace(config.TVShows[i], "~", usr.HomeDir, 1)
-	}
-	for i, _ := range config.Audio {
-		config.Audio[i] = strings.Replace(config.Audio[i], "~", usr.HomeDir, 1)
-	}
-	for i, _ := range config.Video {
-		config.Video[i] = strings.Replace(config.Video[i], "~", usr.HomeDir, 1)
-	}
+	config.Movies = strings.Replace(config.Movies, "~", usr.HomeDir, 1)
+	config.TVShows = strings.Replace(config.TVShows, "~", usr.HomeDir, 1)
+	config.Audio = strings.Replace(config.Audio, "~", usr.HomeDir, 1)
+	config.Video = strings.Replace(config.Video, "~", usr.HomeDir, 1)
 
 	return config
 }

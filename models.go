@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/ryanss/gorm"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -90,41 +90,37 @@ var db = initDB()
 func updateDB() {
 	timestamp := time.Now().Local()
 
-	for i, _ := range config.Movies {
-		d, _ := os.Open(config.Movies[i])
-		defer d.Close()
-		files, _ := d.Readdir(-1)
-		for _, file := range files {
-			if filepath.Ext(file.Name()) == ".m4v" {
-				movie := Movie{}
-				db.Where(Movie{
-					Filename: file.Name(),
-					Size:     file.Size(),
-				}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
-			}
+	d, _ := os.Open(config.Movies)
+	defer d.Close()
+	files, _ := d.Readdir(-1)
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".m4v" {
+			movie := Movie{}
+			db.Where(Movie{
+				Filename: file.Name(),
+				Size:     file.Size(),
+			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 		}
-		db.Exec("UPDATE movies SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 	}
+	db.Exec("UPDATE movies SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 
-	for i, _ := range config.TVShows {
-		d, _ := os.Open(config.TVShows[i])
-		defer d.Close()
-		files, _ := d.Readdir(-1)
-		for _, file := range files {
-			if file.IsDir() {
-				e, _ := os.Open(config.TVShows[i] + string(filepath.Separator) + file.Name())
-				defer e.Close()
-				episodes, _ := e.Readdir(-1)
-				for _, episode := range episodes {
-					if filepath.Ext(episode.Name()) == ".m4v" {
-						show := TVShow{
-							ShowTitle: file.Name(),
-							Filename:  episode.Name(),
-							Size:      episode.Size(),
-						}
-						show.Parse()
-						db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
+	d, _ = os.Open(config.TVShows)
+	defer d.Close()
+	files, _ = d.Readdir(-1)
+	for _, file := range files {
+		if file.IsDir() {
+			e, _ := os.Open(config.TVShows + string(filepath.Separator) + file.Name())
+			defer e.Close()
+			episodes, _ := e.Readdir(-1)
+			for _, episode := range episodes {
+				if filepath.Ext(episode.Name()) == ".m4v" {
+					show := TVShow{
+						ShowTitle: file.Name(),
+						Filename:  episode.Name(),
+						Size:      episode.Size(),
 					}
+					show.Parse()
+					db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
 				}
 			}
 		}
