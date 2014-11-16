@@ -44,17 +44,13 @@ func (t TVShow) TableName() string {
 
 func (t *TVShow) Parse() {
 	re := regexp.MustCompile("S[0-9]{2}E[0-9]{2}")
-	fmt.Println(t.Filename)
 	info := re.FindString(t.Filename)
-	fmt.Println(info)
 	t.Season, _ = strconv.Atoi(info[1:3])
-	fmt.Println(t.Season)
 	t.Episode, _ = strconv.Atoi(info[5:])
-	fmt.Println(t.Episode)
 }
 
 func initDB() gorm.DB {
-	db, err := gorm.Open("sqlite3", dir+"btpodcast.db")
+	db, err := gorm.Open("sqlite3", dir+"podcastd.sqlite")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
