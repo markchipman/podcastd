@@ -10,8 +10,10 @@ func main() {
 	watchDownloads()
 	http.HandleFunc("/", home)
 	http.HandleFunc("/rss/movies", MoviesRSS)
-	fs := http.FileServer(http.Dir(dir))
-	http.Handle("/files/", http.StripPrefix("/files/", fs))
+	for i, _ := range config.Movies {
+		prefix := fmt.Sprintf("/media/movies/%d/", i)
+		http.Handle(prefix, http.StripPrefix(prefix, http.FileServer(http.Dir(config.Movies[i]))))
+	}
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }
 

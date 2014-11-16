@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"os"
 	"os/user"
-	"path/filepath"
 	"strings"
 )
 
 type Config struct {
-	Home string
-	Port int
+	Port     int
+	Database string
+	Movies   []string
+	TVShows  []string
+	Audio    []string
+	Video    []string
 }
 
 func loadConfigFile() Config {
@@ -22,21 +25,24 @@ func loadConfigFile() Config {
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
+
+	// Convert tildes (~) in config paths to user home directory
+	usr, _ := user.Current()
+	config.Database = strings.Replace(config.Database, "~", usr.HomeDir, 1)
+	for i, _ := range config.Movies {
+		config.Movies[i] = strings.Replace(config.Movies[i], "~", usr.HomeDir, 1)
+	}
+	for i, _ := range config.TVShows {
+		config.TVShows[i] = strings.Replace(config.TVShows[i], "~", usr.HomeDir, 1)
+	}
+	for i, _ := range config.Audio {
+		config.Audio[i] = strings.Replace(config.Audio[i], "~", usr.HomeDir, 1)
+	}
+	for i, _ := range config.Video {
+		config.Video[i] = strings.Replace(config.Video[i], "~", usr.HomeDir, 1)
+	}
+
 	return config
 }
 
 var config = loadConfigFile()
-
-func initDirectory() string {
-	home := config.Home + string(filepath.Separator)
-	if strings.Contains(home, "~/") {
-		usr, _ := user.Current()
-		home = strings.Replace(home, "~/", usr.HomeDir+string(filepath.Separator), 1)
-	}
-	os.MkdirAll(home+"downloads", 0700)
-	os.MkdirAll(home+"movies", 0700)
-	os.MkdirAll(home+"tvshows", 0700)
-	return home
-}
-
-var dir = initDirectory()

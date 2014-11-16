@@ -1,4 +1,25 @@
 {
-    "Home": "~/media",
-    "Port": 8080
+    "Port": 8080,
+
+    "Database": "~/.podcastd.sqlite",
+
+    "Movies": [
+        "~/movies",
+        "~/documentaries"
+    ],
+
+    "TVShows": [
+        "~/tvshows"
+    ],
+
+    "Audio": [
+        "~/audiobooks",
+        "~/radio"
+    ],
+
+    "Video": [
+        "~/photoshop_training",
+        "~/funny_videos",
+        "~/music_videos"
+    ]
 }

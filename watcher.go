@@ -19,5 +19,7 @@ func watchDownloads() {
 			}
 		}
 	}()
-	watcher.Watch(dir + "downloads")
+	for i, _ := range config.Movies {
+		watcher.Watch(config.Movies[i])
+	}
 }
