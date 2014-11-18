@@ -25,6 +25,18 @@ func (m Movie) PubDate() string {
 	return m.Added.Format(time.RFC1123)
 }
 
+func ProcessMovie(file os.FileInfo, timestamp time.Time) {
+	fmt.Println(file)
+	fmt.Println(timestamp)
+	if filepath.Ext(file.Name()) == ".m4v" {
+		movie := Movie{}
+		db.Where(Movie{
+			Filename: file.Name(),
+			Size:     file.Size(),
+		}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
+	}
+}
+
 type TVShow struct {
 	Id           int
 	Filename     string
@@ -94,13 +106,7 @@ func updateDB() {
 	defer d.Close()
 	files, _ := d.Readdir(-1)
 	for _, file := range files {
-		if filepath.Ext(file.Name()) == ".m4v" {
-			movie := Movie{}
-			db.Where(Movie{
-				Filename: file.Name(),
-				Size:     file.Size(),
-			}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
-		}
+		ProcessMovie(file, timestamp)
 	}
 	db.Exec("UPDATE movies SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 

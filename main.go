@@ -8,7 +8,7 @@ import (
 
 func main() {
 	updateDB()
-	watchDownloads()
+	watchDir(config.Movies, ProcessMovie)
 	auth := httpauth.SimpleBasicAuth(config.Username, config.Password)
 	http.Handle("/", auth(http.HandlerFunc(home)))
 	http.Handle("/rss/movies", auth(http.HandlerFunc(MoviesRSS)))
