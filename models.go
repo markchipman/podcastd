@@ -26,8 +26,6 @@ func (m Movie) PubDate() string {
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
-	fmt.Println(file)
-	fmt.Println(timestamp)
 	if filepath.Ext(file.Name()) == ".m4v" {
 		movie := Movie{}
 		db.Where(Movie{
@@ -59,6 +57,18 @@ func (t *TVShow) Parse() {
 	info := re.FindString(t.Filename)
 	t.Season, _ = strconv.Atoi(info[1:3])
 	t.Episode, _ = strconv.Atoi(info[5:])
+}
+
+func ProcessTVShow(dir string, file os.FileInfo, timestamp time.Time) {
+	if filepath.Ext(file.Name()) == ".m4v" {
+		show := TVShow{
+			ShowTitle: dir,
+			Filename:  file.Name(),
+			Size:      file.Size(),
+		}
+		show.Parse()
+		db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
+	}
 }
 
 type Video struct {
@@ -119,15 +129,7 @@ func updateDB() {
 			defer e.Close()
 			episodes, _ := e.Readdir(-1)
 			for _, episode := range episodes {
-				if filepath.Ext(episode.Name()) == ".m4v" {
-					show := TVShow{
-						ShowTitle: file.Name(),
-						Filename:  episode.Name(),
-						Size:      episode.Size(),
-					}
-					show.Parse()
-					db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
-				}
+				ProcessTVShow(file.Name(), episode, timestamp)
 			}
 		}
 	}
