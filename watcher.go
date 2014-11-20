@@ -16,9 +16,15 @@ func watchDir(dir string, process func(file os.FileInfo, timestmap time.Time)) {
 			select {
 			case ev := <-watcher.Event:
 				if ev.IsCreate() {
+					fmt.Println("event:", ev)
 					fmt.Println("New File:", ev.Name)
 					f, _ := os.Stat(ev.Name)
 					process(f, time.Now().Local())
+				}
+				if ev.IsDelete() || ev.IsRename() {
+					fmt.Println("Deleted File:", ev.Name)
+					db.Where(Movie{Filename: path.Base(ev.Name)}).Delete(Movie{})
+					db.Where(TVShow{Filename: path.Base(ev.Name)}).Delete(TVShow{})
 				}
 			case err := <-watcher.Error:
 				fmt.Println("error:", err)
@@ -34,10 +40,16 @@ func watchDirs(dir string, process func(dir string, file os.FileInfo, timestmap 
 		for {
 			select {
 			case ev := <-watcher.Event:
+				fmt.Println("event:", ev)
 				if ev.IsCreate() {
 					fmt.Println("New File:", ev.Name)
 					f, _ := os.Stat(ev.Name)
 					process(path.Base(path.Dir(ev.Name)), f, time.Now().Local())
+				}
+				if ev.IsDelete() || ev.IsRename() {
+					fmt.Println("Deleted File:", ev.Name)
+					db.Where(Movie{Filename: path.Base(ev.Name)}).Delete(Movie{})
+					db.Where(TVShow{Filename: path.Base(ev.Name)}).Delete(TVShow{})
 				}
 			case err := <-watcher.Error:
 				fmt.Println("error:", err)
