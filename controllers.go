@@ -33,6 +33,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"movies":  movies,
 		"tvshows": tvshows,
+		"host":    r.Host,
 	}
 	err := templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {

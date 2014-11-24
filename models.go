@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -50,6 +51,10 @@ type TVShow struct {
 
 func (t TVShow) TableName() string {
 	return "tvshows"
+}
+
+func (t TVShow) Slug() string {
+	return strings.ToLower(strings.Replace(t.ShowTitle, " ", "", -1))
 }
 
 func (t *TVShow) Parse() {

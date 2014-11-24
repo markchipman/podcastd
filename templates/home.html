@@ -11,27 +11,77 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+      span {
+        color: #777;
+        font-size: 90%;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <h1>Podcast<u>d</u> Feeds</h1>
-          <h4>Movies</h4>
-          <ul>
-            {{range .movies}}
-            <li>{{.Filename}}</li>
-            {{end}}
-          </ul>
-          <h4>TV Shows</h4>
-          <ul>
-            {{range $show, $episodes := .tvshows}}
-            <li><h4><u>{{$show}}</u></h4></li>
-            {{range $episodes}}
-            <li>{{.Filename}}</li>
-            {{end}}
-            {{end}}
-          </ul>
+          <h1>podcast<u>d</u> feeds</h1>
+          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="movies-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#movies" aria-expanded="true" aria-controls="movies">
+                    Movies
+                  </a>
+                  <span class="pull-right">http://{{.host}}/feed/movies</span>
+                </h4>
+              </div>
+              <div id="movies" class="panel-collapse collapse" role="tabpanel" aria-labelledby="movies-heading">
+                <div class="panel-body">
+                  <ul>
+                    {{range .movies}}
+                    <li>{{.Filename}}</li>
+                    {{end}}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="tvshows-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#tvshows" aria-expanded="true" aria-controls="tvshows">
+                    TVShows
+                  </a>
+                  <span class="pull-right">http://{{.host}}/feed/tvshows</span>
+                </h4>
+              </div>
+              <div id="tvshows" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="tvshows-heading">
+                <div class="panel-body">
+                  <div class="panel-group" id="tvshows-accordion" role="tablist" aria-multiselectable="true">
+                    {{$host := .host}}
+                    {{range $show, $episodes := .tvshows}}
+                    <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="{{(index $episodes 0).Slug}}-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" data-parent="#tvshows-accordion" href="#{{(index $episodes 0).Slug}}" aria-expanded="true" aria-controls="{{(index $episodes 0).Slug}}">
+                            {{$show}}
+                            <span class="pull-right">http://{{$host}}/feed/tvshows/{{(index $episodes 0).Slug}}</span>
+                          </a>
+                        </h4>
+                      </div>
+                      <div id="{{(index $episodes 0).Slug}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{(index $episodes 0).Slug}}-heading">
+                        <div class="panel-body">
+                          <ul>
+                            {{range $episodes}}
+                            <li>{{.Filename}}</li>
+                            {{end}}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    {{end}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
