@@ -12,6 +12,13 @@ import (
 	"time"
 )
 
+var validFileType = map[string]bool{
+	".m4a": true,
+	".m4v": true,
+	".mp3": true,
+	".mp4": true,
+}
+
 type Movie struct {
 	Id        int
 	Filename  string
@@ -27,7 +34,7 @@ func (m Movie) PubDate() string {
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
-	if filepath.Ext(file.Name()) == ".m4v" {
+	if validFileType[filepath.Ext(file.Name())] {
 		movie := Movie{}
 		db.Where(Movie{
 			Filename: file.Name(),
@@ -65,7 +72,7 @@ func (t *TVShow) Parse() {
 }
 
 func ProcessTVShow(dir string, file os.FileInfo, timestamp time.Time) {
-	if filepath.Ext(file.Name()) == ".m4v" {
+	if validFileType[filepath.Ext(file.Name())] {
 		show := TVShow{
 			ShowTitle: dir,
 			Filename:  file.Name(),
@@ -73,6 +80,28 @@ func ProcessTVShow(dir string, file os.FileInfo, timestamp time.Time) {
 		}
 		show.Parse()
 		db.Where(show).Assign(TVShow{Timestamp: timestamp}).FirstOrCreate(&show)
+	}
+}
+
+type Audio struct {
+	Id        int
+	Filename  string
+	Size      int64
+	Added     time.Time
+	Timestamp time.Time
+}
+
+func (a Audio) PubDate() string {
+	return a.Added.Format(time.RFC1123)
+}
+
+func ProcessAudio(file os.FileInfo, timestamp time.Time) {
+	if validFileType[filepath.Ext(file.Name())] {
+		audio := Audio{}
+		db.Where(Audio{
+			Filename: file.Name(),
+			Size:     file.Size(),
+		}).Assign(Audio{Timestamp: timestamp}).FirstOrCreate(&audio)
 	}
 }
 
@@ -88,16 +117,14 @@ func (v Video) PubDate() string {
 	return v.Added.Format(time.RFC1123)
 }
 
-type Audio struct {
-	Id        int
-	Filename  string
-	Size      int64
-	Added     time.Time
-	Timestamp time.Time
-}
-
-func (a Audio) PubDate() string {
-	return a.Added.Format(time.RFC1123)
+func ProcessVideo(file os.FileInfo, timestamp time.Time) {
+	if validFileType[filepath.Ext(file.Name())] {
+		video := Video{}
+		db.Where(Video{
+			Filename: file.Name(),
+			Size:     file.Size(),
+		}).Assign(Video{Timestamp: timestamp}).FirstOrCreate(&video)
+	}
 }
 
 func initDB() gorm.DB {
@@ -139,7 +166,25 @@ func updateDB() {
 		}
 	}
 
+	d, _ = os.Open(config.Audio)
+	defer d.Close()
+	files, _ = d.Readdir(-1)
+	for _, file := range files {
+		ProcessAudio(file, timestamp)
+	}
+	db.Exec("UPDATE audio SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
+
+	d, _ = os.Open(config.Video)
+	defer d.Close()
+	files, _ = d.Readdir(-1)
+	for _, file := range files {
+		ProcessVideo(file, timestamp)
+	}
+	db.Exec("UPDATE video SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
+
 	// Remove records from database that were not found
 	db.Where("timestamp <> ?", timestamp).Delete(Movie{})
 	db.Where("timestamp <> ?", timestamp).Delete(TVShow{})
+	db.Where("timestamp <> ?", timestamp).Delete(Audio{})
+	db.Where("timestamp <> ?", timestamp).Delete(Video{})
 }

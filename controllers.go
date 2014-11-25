@@ -30,9 +30,15 @@ func home(w http.ResponseWriter, r *http.Request) {
 		db.Where("show_title = ?", show).Find(&episodes)
 		tvshows[show] = episodes
 	}
+	var audio []Audio
+	db.Find(&audio)
+	var video []Video
+	db.Find(&video)
 	data := map[string]interface{}{
 		"movies":  movies,
 		"tvshows": tvshows,
+		"audio":   audio,
+		"video":   video,
 		"host":    r.Host,
 	}
 	err := templates.ExecuteTemplate(w, "home.html", data)

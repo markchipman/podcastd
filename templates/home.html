@@ -81,6 +81,44 @@
                 </div>
               </div>
             </div>
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="audio-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#audio" aria-expanded="true" aria-controls="audio">
+                    Audio
+                  </a>
+                  <span class="pull-right">http://{{.host}}/feed/audio</span>
+                </h4>
+              </div>
+              <div id="audio" class="panel-collapse collapse" role="tabpanel" aria-labelledby="audio-heading">
+                <div class="panel-body">
+                  <ul>
+                    {{range .audio}}
+                    <li>{{.Filename}}</li>
+                    {{end}}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="video-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#video" aria-expanded="true" aria-controls="video">
+                    Video
+                  </a>
+                  <span class="pull-right">http://{{.host}}/feed/video</span>
+                </h4>
+              </div>
+              <div id="video" class="panel-collapse collapse" role="tabpanel" aria-labelledby="video-heading">
+                <div class="panel-body">
+                  <ul>
+                    {{range .video}}
+                    <li>{{.Filename}}</li>
+                    {{end}}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
