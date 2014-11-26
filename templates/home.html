@@ -1,3 +1,4 @@
+{{$host := .host}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -37,7 +38,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .movies}}
-                    <li>{{.Filename}}</li>
+                    <li><a href="http://{{$host}}/media/movies/{{.Filename}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
@@ -55,7 +56,6 @@
               <div id="tvshows" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="tvshows-heading">
                 <div class="panel-body">
                   <div class="panel-group" id="tvshows-accordion" role="tablist" aria-multiselectable="true">
-                    {{$host := .host}}
                     {{range $show, $episodes := .tvshows}}
                     <div class="panel panel-default">
                       <div class="panel-heading" role="tab" id="{{(index $episodes 0).Slug}}-heading">
@@ -70,7 +70,7 @@
                         <div class="panel-body">
                           <ul>
                             {{range $episodes}}
-                            <li>{{.Filename}}</li>
+                            <li><a href="http://{{$host}}/media/tvshows/{{$show}}/{{.Filename}}">{{.Filename}}</a></li>
                             {{end}}
                           </ul>
                         </div>
@@ -94,7 +94,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .audio}}
-                    <li>{{.Filename}}</li>
+                    <li><a href="http://{{$host}}/media/audio/{{.Filename}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
@@ -113,7 +113,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .video}}
-                    <li>{{.Filename}}</li>
+                    <li><a href="http://{{$host}}/media/video/{{.Filename}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
