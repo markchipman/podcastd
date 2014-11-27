@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/DTDs/Podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+    <title>Video</title>
+    <description>podcastd Video</description>
+    <itunes:author>podcastd</itunes:author>
+    <link>https://github.com/ryanss/podcastd</link>
+    <itunes:image href="http://www.yourserver.com/YourPodcastPicture.jpg" />
+    <pubDate>{{.lastUpdate}}</pubDate>
+
+    {{if $host := .host}}
+    {{range .video}}
+    <item>
+        <title>{{.Filename}}</title>
+        <description> A description of your podcast episode </description>
+        <pubDate>{{.PubDate}}</pubDate>
+        <enclosure url="http://{{$host}}/media/video/{{.Filename}}" length="{{.Size}}" type="video/mp4" />
+    </item>
+    {{end}}
+    {{end}}
+</channel>
+</rss>

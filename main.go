@@ -15,7 +15,9 @@ func main() {
 
 	auth := httpauth.SimpleBasicAuth(config.Username, config.Password)
 	http.Handle("/", auth(http.HandlerFunc(home)))
-	http.Handle("/feed/movies", auth(http.HandlerFunc(MoviesRSS)))
+	http.Handle("/feed/movies", auth(http.HandlerFunc(MovieFeed)))
+	http.Handle("/feed/audio", auth(http.HandlerFunc(AudioFeed)))
+	http.Handle("/feed/video", auth(http.HandlerFunc(VideoFeed)))
 
 	movieFileServer := http.FileServer(http.Dir(config.Movies))
 	http.Handle("/media/movies/", auth(http.StripPrefix("/media/movies/", movieFileServer)))

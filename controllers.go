@@ -10,7 +10,11 @@ import (
 
 var tmplDir = "templates" + string(filepath.Separator)
 var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
-var xml = xtemplate.Must(xtemplate.ParseFiles(tmplDir + "movies.xml"))
+var xml = xtemplate.Must(xtemplate.ParseFiles(
+	tmplDir+"movies.xml",
+	tmplDir+"audio.xml",
+	tmplDir+"video.xml",
+))
 
 func home(w http.ResponseWriter, r *http.Request) {
 	var movies []Movie
@@ -47,7 +51,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func MoviesRSS(w http.ResponseWriter, r *http.Request) {
+func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	var movies []Movie
 	db.Find(&movies)
 	row := db.Raw("SELECT added FROM movies ORDER BY added DESC LIMIT 1;").Row()
@@ -59,6 +63,42 @@ func MoviesRSS(w http.ResponseWriter, r *http.Request) {
 		"movies":     movies,
 	}
 	err := xml.ExecuteTemplate(w, "movies.xml", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}
+
+func AudioFeed(w http.ResponseWriter, r *http.Request) {
+	var audio []Audio
+	db.Find(&audio)
+	row := db.Raw("SELECT added FROM audio ORDER BY added DESC LIMIT 1;").Row()
+	var lastUpdate time.Time
+	row.Scan(&lastUpdate)
+	data := map[string]interface{}{
+		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
+		"audio":      audio,
+	}
+	err := xml.ExecuteTemplate(w, "audio.xml", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}
+
+func VideoFeed(w http.ResponseWriter, r *http.Request) {
+	var video []Video
+	db.Find(&video)
+	row := db.Raw("SELECT added FROM video ORDER BY added DESC LIMIT 1;").Row()
+	var lastUpdate time.Time
+	row.Scan(&lastUpdate)
+	data := map[string]interface{}{
+		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
+		"video":      video,
+	}
+	err := xml.ExecuteTemplate(w, "video.xml", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
