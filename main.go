@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/goji/httpauth"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -16,6 +17,7 @@ func main() {
 	auth := httpauth.SimpleBasicAuth(config.Username, config.Password)
 	http.Handle("/", auth(http.HandlerFunc(home)))
 	http.Handle("/feed/movies", auth(http.HandlerFunc(MovieFeed)))
+	http.Handle("/feed/tvshows", auth(http.HandlerFunc(TVShowFeed)))
 	http.Handle("/feed/audio", auth(http.HandlerFunc(AudioFeed)))
 	http.Handle("/feed/video", auth(http.HandlerFunc(VideoFeed)))
 
@@ -24,6 +26,14 @@ func main() {
 
 	tvshowFileServer := http.FileServer(http.Dir(config.TVShows))
 	http.Handle("/media/tvshows/", auth(http.StripPrefix("/media/tvshows/", tvshowFileServer)))
+	rows, _ := db.Raw("SELECT DISTINCT show_title FROM tvshows").Rows()
+	defer rows.Close()
+	for rows.Next() {
+		var title string
+		rows.Scan(&title)
+		slug := strings.ToLower(strings.Replace(title, " ", "", -1))
+		http.Handle("/media/tvshows/"+slug+"/", auth(http.StripPrefix("/media/tvshows/"+slug+"/", http.FileServer(http.Dir(config.TVShows+"/"+title+"/")))))
+	}
 
 	audioFileServer := http.FileServer(http.Dir(config.Audio))
 	http.Handle("/media/audio/", auth(http.StripPrefix("/media/audio/", audioFileServer)))

@@ -64,11 +64,15 @@ func (t TVShow) Slug() string {
 	return strings.ToLower(strings.Replace(t.ShowTitle, " ", "", -1))
 }
 
+func (t TVShow) S00E00() string {
+	return fmt.Sprintf("S%02dE%02d", t.Season, t.Episode)
+}
+
 func (t *TVShow) Parse() {
 	re := regexp.MustCompile("S[0-9]{2}E[0-9]{2}")
 	info := re.FindString(t.Filename)
 	t.Season, _ = strconv.Atoi(info[1:3])
-	t.Episode, _ = strconv.Atoi(info[5:])
+	t.Episode, _ = strconv.Atoi(info[4:])
 }
 
 func ProcessTVShow(dir string, file os.FileInfo, timestamp time.Time) {

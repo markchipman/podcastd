@@ -12,6 +12,7 @@ var tmplDir = "templates" + string(filepath.Separator)
 var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
 var xml = xtemplate.Must(xtemplate.ParseFiles(
 	tmplDir+"movies.xml",
+	tmplDir+"tvshows.xml",
 	tmplDir+"audio.xml",
 	tmplDir+"video.xml",
 ))
@@ -66,7 +67,23 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
 
+func TVShowFeed(w http.ResponseWriter, r *http.Request) {
+	var tvshows []TVShow
+	db.Find(&tvshows)
+	row := db.Raw("SELECT aired FROM tvshows ORDER BY aired DESC LIMIT 1;").Row()
+	var lastUpdate time.Time
+	row.Scan(&lastUpdate)
+	data := map[string]interface{}{
+		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
+		"tvshows":    tvshows,
+	}
+	err := xml.ExecuteTemplate(w, "tvshows.xml", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func AudioFeed(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +101,6 @@ func AudioFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
 }
 
 func VideoFeed(w http.ResponseWriter, r *http.Request) {
@@ -102,5 +118,4 @@ func VideoFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
 }
