@@ -29,6 +29,7 @@ type Movie struct {
 	Year      int
 	Desc      string
 	Genres    string
+	Poster    string
 	Added     time.Time
 	Timestamp time.Time
 }
@@ -78,6 +79,8 @@ func (m *Movie) Scrape() {
 		m.Genres = m.Genres + s.Text() + ", "
 	})
 	m.Genres = m.Genres[:len(m.Genres)-2]
+	s = doc.Find("a.poster").First()
+	m.Poster, _ = s.Find("img").Attr("src")
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
