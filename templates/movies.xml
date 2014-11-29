@@ -14,7 +14,7 @@
         <title>{{.Filename}}</title>
         <description> A description of your podcast episode </description>
         <pubDate>{{.PubDate}}</pubDate>
-        <enclosure url="http://{{$host}}/media/movies/{{.Filename}}" length="{{.Size}}" type="video/mp4" />
+        <enclosure url="{{.MediaURL $host}}" length="{{.Size}}" type="video/mp4" />
     </item>
     {{end}}
     {{end}}

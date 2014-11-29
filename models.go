@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/ryanss/gorm"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -31,6 +32,11 @@ type Movie struct {
 
 func (m Movie) PubDate() string {
 	return m.Added.Format(time.RFC1123)
+}
+
+func (m Movie) MediaURL(host string) string {
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/movies/%s", host, m.Filename))
+	return Url.String()
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
@@ -68,6 +74,11 @@ func (t TVShow) S00E00() string {
 	return fmt.Sprintf("S%02dE%02d", t.Season, t.Episode)
 }
 
+func (t TVShow) MediaURL(host string) string {
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/tvshows/%s/%s", host, t.ShowTitle, t.Filename))
+	return Url.String()
+}
+
 func (t *TVShow) Parse() {
 	re := regexp.MustCompile("S[0-9]{2}E[0-9]{2}")
 	info := re.FindString(t.Filename)
@@ -99,6 +110,11 @@ func (a Audio) PubDate() string {
 	return a.Added.Format(time.RFC1123)
 }
 
+func (a Audio) MediaURL(host string) string {
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/audio/%s", host, a.Filename))
+	return Url.String()
+}
+
 func ProcessAudio(file os.FileInfo, timestamp time.Time) {
 	if validFileType[filepath.Ext(file.Name())] {
 		audio := Audio{}
@@ -119,6 +135,11 @@ type Video struct {
 
 func (v Video) PubDate() string {
 	return v.Added.Format(time.RFC1123)
+}
+
+func (v Video) MediaURL(host string) string {
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/video/%s", host, v.Filename))
+	return Url.String()
 }
 
 func ProcessVideo(file os.FileInfo, timestamp time.Time) {

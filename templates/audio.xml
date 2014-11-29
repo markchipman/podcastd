@@ -14,7 +14,7 @@
         <title>{{.Filename}}</title>
         <description> A description of your podcast episode </description>
         <pubDate>{{.PubDate}}</pubDate>
-        <enclosure url="http://{{$host}}/media/audio/{{.Filename}}" length="{{.Size}}" type="audio/mp3" />
+        <enclosure url="{{.MediaURL $host}}" length="{{.Size}}" type="audio/mp3" />
     </item>
     {{end}}
     {{end}}
