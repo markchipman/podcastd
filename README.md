@@ -15,5 +15,5 @@ echo "export GOPATH=~/.go" >> .bash_profile
 echo "export PATH=${GOPATH}/bin:${PATH}" >> .bash_profile
 go get -u github.com/pilu/fresh
 cd /path/to/podcastd
-fresh
+fresh -c fresh.conf
 ```
