@@ -39,13 +39,34 @@ func (m Movie) MediaURL(host string) string {
 	return Url.String()
 }
 
+func (m *Movie) Parse() {
+	filename := []byte(m.Filename)
+	index := len(filename)
+	reYear := regexp.MustCompile("\\.[0-9]{4}")
+	iYear := reYear.FindIndex(filename)
+	if iYear != nil && iYear[0] < index {
+		index = iYear[0]
+	}
+	reExt := regexp.MustCompile("\\.[a-z0-9]+$")
+	iExt := reExt.FindIndex(filename)
+	if iExt != nil && iExt[0] < index {
+		index = iExt[0]
+	}
+	m.Title = strings.Replace(string(filename[0:index]), ".", " ", -1)
+	if iYear != nil {
+		year, _ := strconv.ParseInt(string(filename[iYear[0]+1:iYear[1]]), 10, 0)
+		m.Year = int(year)
+	}
+}
+
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
 	if validFileType[filepath.Ext(file.Name())] {
-		movie := Movie{}
-		db.Where(Movie{
+		movie := Movie{
 			Filename: file.Name(),
 			Size:     file.Size(),
-		}).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
+		}
+		movie.Parse()
+		db.Where(movie).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
 	}
 }
 
@@ -197,7 +218,7 @@ func updateDB() {
 	for _, file := range files {
 		ProcessAudio(file, timestamp)
 	}
-	db.Exec("UPDATE audio SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
+	db.Exec("UPDATE audios SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 
 	d, _ = os.Open(config.Video)
 	defer d.Close()
@@ -205,7 +226,7 @@ func updateDB() {
 	for _, file := range files {
 		ProcessVideo(file, timestamp)
 	}
-	db.Exec("UPDATE video SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
+	db.Exec("UPDATE videos SET added=datetime(?, 'localtime') WHERE added < '1990-01-01';", timestamp)
 
 	// Remove records from database that were not found
 	db.Where("timestamp <> ?", timestamp).Delete(Movie{})
