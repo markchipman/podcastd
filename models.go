@@ -29,8 +29,6 @@ type Movie struct {
 	Year      int
 	Desc      string
 	Genres    string
-	Image     []byte
-	Thumb     []byte
 	Added     time.Time
 	Timestamp time.Time
 }
@@ -75,6 +73,11 @@ func (m *Movie) Scrape() {
 	doc, _ = goquery.NewDocument("https://www.themoviedb.org" + link)
 	s = doc.Find("#overview").First()
 	m.Desc = s.Text()
+	m.Genres = ""
+	doc.Find("#genres span").Each(func(i int, s *goquery.Selection) {
+		m.Genres = m.Genres + s.Text() + ", "
+	})
+	m.Genres = m.Genres[:len(m.Genres)-2]
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
