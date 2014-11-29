@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/ryanss/gorm"
 	"net/url"
@@ -26,6 +27,10 @@ type Movie struct {
 	Size      int64
 	Title     string
 	Year      int
+	Desc      string
+	Genres    string
+	Image     []byte
+	Thumb     []byte
 	Added     time.Time
 	Timestamp time.Time
 }
@@ -59,6 +64,19 @@ func (m *Movie) Parse() {
 	}
 }
 
+func (m *Movie) Scrape() {
+	searchURL := "https://www.themoviedb.org/search?query=" + m.Title
+	searchURL = strings.Replace(searchURL, " ", "%20", -1)
+	doc, _ := goquery.NewDocument(searchURL)
+	s := doc.Find("ul.movie li").First()
+	s = s.Find("a").First()
+	link, _ := s.Attr("href")
+	fmt.Println(link)
+	doc, _ = goquery.NewDocument("https://www.themoviedb.org" + link)
+	s = doc.Find("#overview").First()
+	m.Desc = s.Text()
+}
+
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
 	if validFileType[filepath.Ext(file.Name())] {
 		movie := Movie{
@@ -67,6 +85,12 @@ func ProcessMovie(file os.FileInfo, timestamp time.Time) {
 		}
 		movie.Parse()
 		db.Where(movie).Assign(Movie{Timestamp: timestamp}).FirstOrCreate(&movie)
+		t, _ := time.Parse("2006-01-02", "1900-01-01")
+		if t.After(movie.Added) {
+			movie.Added = time.Now()
+			movie.Scrape()
+			db.Save(&movie)
+		}
 	}
 }
 
@@ -180,7 +204,7 @@ func initDB() gorm.DB {
 		os.Exit(1)
 	}
 	db.DB()
-	db.LogMode(true)
+	//db.LogMode(true)
 	db.AutoMigrate(&Movie{}, &TVShow{}, &Audio{}, &Video{})
 	return db
 }
