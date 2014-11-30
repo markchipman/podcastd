@@ -36,11 +36,23 @@
               </div>
               <div id="movies" class="panel-collapse collapse" role="tabpanel" aria-labelledby="movies-heading">
                 <div class="panel-body">
-                  <ul>
+                  <div class="row">
                     {{range .movies}}
-                    <li><a href="http://{{$host}}/media/movies/{{.Filename}}">{{.Filename}}</a></li>
+                    <div class="media col-md-6">
+                      <a class="media-left" href="http://{{$host}}/media/movies/{{.Filename}}">
+                        <img height="200" src="{{.Poster}}">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="media-heading">
+                          <a href="http://{{$host}}/media/movies/{{.Filename}}">{{.Title}}</a>
+                          ({{.Year}})
+                        </h4>
+                        <small>{{.Desc}}</small>
+                        <div class="genres" data-genres="{{.Genres}}"></div>
+                      </div>
+                    </div>
                     {{end}}
-                  </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -126,5 +138,13 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script>
+      $('.genres').each(function() {
+        var genres = $(this).data('genres').split(',');
+        for (var i=0; i < genres.length; i++) {
+          $(this).html($(this).html() + '<span class="label label-default">' + genres[i] + '</span> ');
+        }
+      });
+    </script>
   </body>
 </html>
