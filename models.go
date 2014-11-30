@@ -30,6 +30,7 @@ type Movie struct {
 	Desc      string
 	Genres    string
 	Poster    string
+	Runtime   int
 	Added     time.Time
 	Timestamp time.Time
 }
@@ -81,6 +82,8 @@ func (m *Movie) Scrape() {
 	m.Genres = m.Genres[:len(m.Genres)-2]
 	s = doc.Find("a.poster").First()
 	m.Poster, _ = s.Find("img").Attr("src")
+	runtime, _ := strconv.ParseInt(doc.Find("#runtime").Text(), 10, 0)
+	m.Runtime = int(runtime)
 }
 
 func ProcessMovie(file os.FileInfo, timestamp time.Time) {
