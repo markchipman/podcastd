@@ -3,7 +3,9 @@ package main
 import (
 	"html/template"
 	"net/http"
+	"path"
 	"path/filepath"
+	"strconv"
 	xtemplate "text/template"
 	"time"
 )
@@ -67,6 +69,14 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func MovieFile(w http.ResponseWriter, r *http.Request) {
+	_, end := path.Split(r.URL.Path)
+	id, _ := strconv.ParseInt(end, 10, 0)
+	movie := Movie{Id: int(id)}
+	db.Where(&movie).First(&movie)
+	http.ServeFile(w, r, config.Movies+string(filepath.Separator)+movie.Filename)
 }
 
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {

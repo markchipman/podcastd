@@ -39,12 +39,12 @@
                   <div class="row">
                     {{range .movies}}
                     <div class="media col-md-6">
-                      <a class="media-left" href="http://{{$host}}/media/movies/{{.Filename}}">
+                      <a class="media-left" href="http://{{$host}}/movies/{{.Id}}">
                         <img height="200" src="{{.Poster}}">
                       </a>
                       <div class="media-body">
                         <h4 class="media-heading">
-                          <a href="http://{{$host}}/media/movies/{{.Filename}}">{{.Title}}</a>
+                          <a href="http://{{$host}}/movies/{{.Id}}">{{.Title}}</a>
                           ({{.Year}})
                         </h4>
                         <small>{{.Desc}} (Runtime: {{.Runtime}} min)</small>

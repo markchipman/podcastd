@@ -40,7 +40,7 @@ func (m Movie) PubDate() string {
 }
 
 func (m Movie) MediaURL(host string) string {
-	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/movies/%s", host, m.Filename))
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/movies/%d", host, m.Id))
 	return Url.String()
 }
 
