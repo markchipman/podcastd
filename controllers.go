@@ -20,27 +20,14 @@ var xml = xtemplate.Must(xtemplate.ParseFiles(
 ))
 
 func home(w http.ResponseWriter, r *http.Request) {
-	var movies []Movie
-	db.Find(&movies)
-	var shows []string
-	rows, _ := db.Raw("SELECT DISTINCT show_title FROM tvshows").Rows()
-	defer rows.Close()
-	for rows.Next() {
-		var title string
-		rows.Scan(&title)
-		shows = append(shows, title)
-	}
-	var tvshows map[string]interface{}
-	tvshows = make(map[string]interface{})
-	for _, show := range shows {
-		var episodes []TVShow
-		db.Where("show_title = ?", show).Find(&episodes)
-		tvshows[show] = episodes
-	}
-	var audio []Audio
-	db.Find(&audio)
-	var video []Video
-	db.Find(&video)
+	var movies []Media
+	db.Where(Media{Type: "movie"}).Find(&movies)
+	var tvshows []Media
+	db.Where(Media{Type: "tvshow"}).Find(&tvshows)
+	var audio []Media
+	db.Where(Media{Type: "audio"}).Find(&audio)
+	var video []Media
+	db.Where(Media{Type: "video"}).Find(&video)
 	data := map[string]interface{}{
 		"movies":  movies,
 		"tvshows": tvshows,
@@ -55,9 +42,9 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func MovieFeed(w http.ResponseWriter, r *http.Request) {
-	var movies []Movie
+	var movies []Media
 	db.Find(&movies)
-	row := db.Raw("SELECT added FROM movies ORDER BY added DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -71,18 +58,18 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func MovieFile(w http.ResponseWriter, r *http.Request) {
+func MediaFile(w http.ResponseWriter, r *http.Request) {
 	_, end := path.Split(r.URL.Path)
 	id, _ := strconv.ParseInt(end, 10, 0)
-	movie := Movie{Id: int(id)}
-	db.Where(&movie).First(&movie)
-	http.ServeFile(w, r, config.Movies+string(filepath.Separator)+movie.Filename)
+	media := Media{Id: int(id)}
+	db.Where(&media).First(&media)
+	http.ServeFile(w, r, media.Path+string(filepath.Separator)+media.Filename)
 }
 
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {
-	var tvshows []TVShow
+	var tvshows []Media
 	db.Find(&tvshows)
-	row := db.Raw("SELECT aired FROM tvshows ORDER BY aired DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT episode_aired FROM media ORDER BY episode_aired DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -97,9 +84,9 @@ func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func AudioFeed(w http.ResponseWriter, r *http.Request) {
-	var audio []Audio
+	var audio []Media
 	db.Find(&audio)
-	row := db.Raw("SELECT added FROM audio ORDER BY added DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -114,9 +101,9 @@ func AudioFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func VideoFeed(w http.ResponseWriter, r *http.Request) {
-	var video []Video
+	var video []Media
 	db.Find(&video)
-	row := db.Raw("SELECT added FROM video ORDER BY added DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{

@@ -3,8 +3,10 @@
     "Password": "pass",
     "Port":     8080,
     "Database": "~/.podcastd.sqlite",
-    "Movies":   "~/movies",
-    "TVShows":  "~/tvshows",
-    "Audio":    "~/audio",
-    "Video":    "~videos"
+    "Media": [
+        "~/movies",
+        "~/tvshows",
+        "~/audio",
+        "~videos"
+    ]
 }

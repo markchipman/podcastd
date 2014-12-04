@@ -67,29 +67,11 @@
               </div>
               <div id="tvshows" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="tvshows-heading">
                 <div class="panel-body">
-                  <div class="panel-group" id="tvshows-accordion" role="tablist" aria-multiselectable="true">
-                    {{range $show, $episodes := .tvshows}}
-                    <div class="panel panel-default">
-                      <div class="panel-heading" role="tab" id="{{(index $episodes 0).Slug}}-heading">
-                        <h4 class="panel-title">
-                          <a data-toggle="collapse" data-parent="#tvshows-accordion" href="#{{(index $episodes 0).Slug}}" aria-expanded="true" aria-controls="{{(index $episodes 0).Slug}}">
-                            {{$show}}
-                            <span class="pull-right">http://{{$host}}/feed/tvshows/{{(index $episodes 0).Slug}}</span>
-                          </a>
-                        </h4>
-                      </div>
-                      <div id="{{(index $episodes 0).Slug}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{(index $episodes 0).Slug}}-heading">
-                        <div class="panel-body">
-                          <ul>
-                            {{range $episodes}}
-                            <li><a href="http://{{$host}}/media/tvshows/{{$show}}/{{.Filename}}">{{.Filename}}</a></li>
-                            {{end}}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
+                  <ul>
+                    {{range .tvshows}}
+                    <li><a href="http://{{$host}}/media/{{.Filename}}">{{.Filename}}</a></li>
                     {{end}}
-                  </div>
+                  </ul>
                 </div>
               </div>
             </div>

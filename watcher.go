@@ -9,32 +9,7 @@ import (
 	"time"
 )
 
-func watchDir(dir string, process func(file os.FileInfo, timestmap time.Time)) {
-	watcher, _ := fsnotify.NewWatcher()
-	go func() {
-		for {
-			select {
-			case ev := <-watcher.Event:
-				if ev.IsCreate() {
-					fmt.Println("event:", ev)
-					fmt.Println("New File:", ev.Name)
-					f, _ := os.Stat(ev.Name)
-					process(f, time.Now().Local())
-				}
-				if ev.IsDelete() || ev.IsRename() {
-					fmt.Println("Deleted File:", ev.Name)
-					db.Where(Movie{Filename: path.Base(ev.Name)}).Delete(Movie{})
-					db.Where(TVShow{Filename: path.Base(ev.Name)}).Delete(TVShow{})
-				}
-			case err := <-watcher.Error:
-				fmt.Println("error:", err)
-			}
-		}
-	}()
-	watcher.Watch(dir)
-}
-
-func watchDirs(dir string, process func(dir string, file os.FileInfo, timestmap time.Time)) {
+func watchDir(dir string) {
 	watcher, _ := fsnotify.NewWatcher()
 	go func() {
 		for {
@@ -43,13 +18,13 @@ func watchDirs(dir string, process func(dir string, file os.FileInfo, timestmap 
 				fmt.Println("event:", ev)
 				if ev.IsCreate() {
 					fmt.Println("New File:", ev.Name)
-					f, _ := os.Stat(ev.Name)
-					process(path.Base(path.Dir(ev.Name)), f, time.Now().Local())
+					if ValidFileType[filepath.Ext(ev.Name)] {
+						ProcessFile(ev.Name, time.Now().Local())
+					}
 				}
 				if ev.IsDelete() || ev.IsRename() {
 					fmt.Println("Deleted File:", ev.Name)
-					db.Where(Movie{Filename: path.Base(ev.Name)}).Delete(Movie{})
-					db.Where(TVShow{Filename: path.Base(ev.Name)}).Delete(TVShow{})
+					db.Where(Media{Path: ev.Name, Filename: path.Base(ev.Name)}).Delete(Media{})
 				}
 			case err := <-watcher.Error:
 				fmt.Println("error:", err)
@@ -58,7 +33,7 @@ func watchDirs(dir string, process func(dir string, file os.FileInfo, timestmap 
 	}()
 	watcher.Watch(dir)
 
-	// Also watch insides all directories in `dir`
+	// Also watch inside directories
 	d, _ := os.Open(dir)
 	defer d.Close()
 	files, _ := d.Readdir(-1)
