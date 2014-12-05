@@ -41,6 +41,15 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func MediaFile(w http.ResponseWriter, r *http.Request) {
+	p, filename := path.Split(r.URL.Path)
+	_, mediaId := path.Split(p[:len(p)-1])
+	id, _ := strconv.ParseInt(mediaId, 10, 0)
+	media := Media{Id: int(id), Filename: filename}
+	db.Where(&media).First(&media)
+	http.ServeFile(w, r, media.Path+string(filepath.Separator)+media.Filename)
+}
+
 func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	var movies []Media
 	db.Find(&movies)
@@ -56,14 +65,6 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-}
-
-func MediaFile(w http.ResponseWriter, r *http.Request) {
-	_, end := path.Split(r.URL.Path)
-	id, _ := strconv.ParseInt(end, 10, 0)
-	media := Media{Id: int(id)}
-	db.Where(&media).First(&media)
-	http.ServeFile(w, r, media.Path+string(filepath.Separator)+media.Filename)
 }
 
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {

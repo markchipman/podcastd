@@ -7,6 +7,7 @@ import (
 	"github.com/ryanss/gorm"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -52,14 +53,13 @@ func (m Media) PubDate() string {
 }
 
 func (m Media) MediaURL(host string) string {
-	Url, _ := url.Parse(fmt.Sprintf("http://%s/%s/%d/%s", host, m.Type, m.Id, m.Filename))
+	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/%d/%s", host, m.Id, m.Filename))
 	return Url.String()
 }
 
 func ProcessFile(fp string, timestamp time.Time) {
-	fmt.Println(fp)
 	file, _ := os.Stat(fp)
-	fmt.Println(file.Name())
+	fp, _ = path.Split(fp)
 	media := Media{
 		Path:     fp,
 		Filename: file.Name(),

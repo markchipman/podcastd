@@ -44,7 +44,7 @@
                       </a>
                       <div class="media-body">
                         <h4 class="media-heading">
-                          <a href="http://{{$host}}/movies/{{.Id}}">{{.Title}}</a>
+                          <a href="{{.MediaURL $host}}">{{.Title}}</a>
                           ({{.Year}})
                         </h4>
                         <small>{{.Desc}} (Runtime: {{.Runtime}} min)</small>
@@ -69,7 +69,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .tvshows}}
-                    <li><a href="http://{{$host}}/media/{{.Filename}}">{{.Filename}}</a></li>
+                    <li><a href="{{.MediaURL $host}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
@@ -88,7 +88,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .audio}}
-                    <li><a href="http://{{$host}}/media/audio/{{.Filename}}">{{.Filename}}</a></li>
+                    <li><a href="{{.MediaURL $host}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
@@ -107,7 +107,7 @@
                 <div class="panel-body">
                   <ul>
                     {{range .video}}
-                    <li><a href="http://{{$host}}/media/video/{{.Filename}}">{{.Filename}}</a></li>
+                    <li><a href="{{.MediaURL $host}}">{{.Filename}}</a></li>
                     {{end}}
                   </ul>
                 </div>
