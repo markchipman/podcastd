@@ -32,13 +32,12 @@ type Media struct {
 	Desc         string
 	Runtime      int
 	Genres       string
-	Year         int
 	Poster       string
 	Season       int
 	Episode      int
 	EpisodeTitle string
 	EpisodeDesc  string
-	EpisodeAired time.Time
+	Released     time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    time.Time
@@ -49,6 +48,9 @@ func (m Media) TableName() string {
 }
 
 func (m Media) PubDate() string {
+	if m.Released.Year() > 1900 {
+		return m.Released.Format(time.RFC1123)
+	}
 	return m.CreatedAt.Format(time.RFC1123)
 }
 
@@ -103,8 +105,7 @@ func ProcessFile(fp string, timestamp time.Time) {
 		}
 		media.Title = strings.Replace(string(filename[0:index]), ".", " ", -1)
 		if iYear != nil {
-			year, _ := strconv.ParseInt(string(filename[iYear[0]+1:iYear[1]]), 10, 0)
-			media.Year = int(year)
+			media.Released, _ = time.Parse("2006", string(filename[iYear[0]+1:iYear[1]])+"-01-01")
 		}
 		media.ScrapeMovie()
 		if media.Desc != "" {
@@ -136,6 +137,8 @@ func (m *Media) ScrapeMovie() {
 	if m.Genres != "" {
 		m.Genres = m.Genres[:len(m.Genres)-2]
 	}
+	s = doc.Find("span[itemprop=datePublished]").First()
+	m.Released, _ = time.ParseInLocation("2006-01-02", s.Text(), time.Local)
 	s = doc.Find("a.poster").First()
 	m.Poster, _ = s.Find("img").Attr("src")
 	runtime, _ := strconv.ParseInt(doc.Find("#runtime").Text(), 10, 0)
@@ -152,7 +155,7 @@ func initDB() gorm.DB {
 		os.Exit(1)
 	}
 	db.DB()
-	db.LogMode(true)
+	//db.LogMode(true)
 	db.AutoMigrate(&Media{})
 	return db
 }
