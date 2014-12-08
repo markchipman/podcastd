@@ -24,22 +24,18 @@ func watchDir(dir string) {
 				}
 				if ev.IsDelete() || ev.IsRename() {
 					fmt.Println("Deleted File:", ev.Name)
-					db.Where(Media{Path: ev.Name, Filename: path.Base(ev.Name)}).Delete(Media{})
+					fp, fn := path.Split(ev.Name)
+					db.Where(Media{Path: fp, Filename: fn}).Delete(Media{})
 				}
 			case err := <-watcher.Error:
 				fmt.Println("error:", err)
 			}
 		}
 	}()
-	watcher.Watch(dir)
-
-	// Also watch inside directories
-	d, _ := os.Open(dir)
-	defer d.Close()
-	files, _ := d.Readdir(-1)
-	for _, file := range files {
-		if file.IsDir() {
-			watcher.Watch(dir + string(filepath.Separator) + file.Name())
+	filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+		if f.IsDir() {
+			watcher.Watch(path)
 		}
-	}
+		return nil
+	})
 }

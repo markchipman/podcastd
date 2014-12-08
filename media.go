@@ -166,15 +166,12 @@ func updateDB() {
 	timestamp := time.Now().Local()
 
 	for _, dir := range config.Media {
-		d, _ := os.Open(dir)
-		defer d.Close()
-		files, _ := d.Readdir(-1)
-		for _, file := range files {
-			if ValidFileType[filepath.Ext(file.Name())] {
-				ProcessFile(dir+string(filepath.Separator)+file.Name(), timestamp)
+		filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+			if ValidFileType[filepath.Ext(f.Name())] {
+				ProcessFile(path, timestamp)
 			}
-
-		}
+			return nil
+		})
 	}
 
 	// Soft delete records that were not found
