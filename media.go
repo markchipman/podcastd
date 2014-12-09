@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/garfunkel/go-tvdb"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/ryanss/gorm"
 	"net/url"
@@ -83,9 +84,11 @@ func ProcessFile(fp string, timestamp time.Time) {
 	re := regexp.MustCompile("S[0-9]{2}E[0-9]{2}")
 	info := re.FindString(media.Filename)
 	if info != "" {
-		media.Type = "tvshow"
 		media.Season, _ = strconv.Atoi(info[1:3])
 		media.Episode, _ = strconv.Atoi(info[4:])
+		i := re.FindStringIndex(media.Filename)
+		media.Title = strings.Replace(media.Filename[0:i[0]], ".", " ", -1)
+		media.Type = "tvshow"
 		media.ScrapeTVShow()
 	}
 
@@ -146,6 +149,19 @@ func (m *Media) ScrapeMovie() {
 }
 
 func (m *Media) ScrapeTVShow() {
+	const APIKey = "E01489F781B562D8"
+	seriesList, _ := tvdb.SearchSeries(m.Title, 1)
+	series := seriesList.Series[0]
+	series.GetDetail()
+	m.Desc = series.Overview
+	runtime, _ := strconv.ParseInt(series.Runtime, 10, 0)
+	m.Runtime = int(runtime)
+	m.Genres = strings.Join(series.Genre, ", ")
+	m.Poster = "http://thetvdb.com/banners/_cache/" + series.Poster
+	episode := series.Seasons[uint64(m.Season)][m.Episode-1]
+	m.EpisodeTitle = episode.EpisodeName
+	m.EpisodeDesc = episode.Overview
+	m.Released, _ = time.ParseInLocation("2006-01-02", episode.FirstAired, time.Local)
 }
 
 func initDB() gorm.DB {
