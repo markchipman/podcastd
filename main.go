@@ -13,8 +13,9 @@ func main() {
 	}
 
 	auth := httpauth.SimpleBasicAuth(config.Username, config.Password)
-	http.Handle("/", auth(http.HandlerFunc(home)))
+	http.Handle("/", auth(http.HandlerFunc(Home)))
 	http.Handle("/media/", http.HandlerFunc(MediaFile))
+	http.Handle("/feed/movies", http.HandlerFunc(MovieFeed))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }

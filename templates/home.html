@@ -36,23 +36,21 @@
               </div>
               <div id="movies" class="panel-collapse collapse" role="tabpanel" aria-labelledby="movies-heading">
                 <div class="panel-body">
-                  <div class="row">
                     {{range .movies}}
-                    <div class="media col-md-6">
+                    <div class="media">
                       <a class="media-left" href="http://{{$host}}/movies/{{.Id}}">
-                        <img height="200" src="{{.Poster}}">
+                        <img height="120" src="{{.Poster}}">
                       </a>
                       <div class="media-body">
                         <h4 class="media-heading">
                           <a href="{{.MediaURL $host}}">{{.Title}}</a>
                           ({{.Released.Year}})
                         </h4>
-                        <small>{{.Desc}} (Runtime: {{.Runtime}} min)</small>
+                        <p>{{.Desc}} (Runtime: {{.Runtime}} min)</p>
                         <div class="genres" data-genres="{{.Genres}}"></div>
                       </div>
                     </div>
                     {{end}}
-                  </div>
                 </div>
               </div>
             </div>

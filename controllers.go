@@ -19,7 +19,7 @@ var xml = xtemplate.Must(xtemplate.ParseFiles(
 	tmplDir+"video.xml",
 ))
 
-func home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request) {
 	var movies []Media
 	db.Where(Media{Type: "movie"}).Find(&movies)
 	var tvshows []Media
@@ -52,7 +52,7 @@ func MediaFile(w http.ResponseWriter, r *http.Request) {
 
 func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	var movies []Media
-	db.Find(&movies)
+	db.Where(Media{Type: "movie"}).Find(&movies)
 	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
