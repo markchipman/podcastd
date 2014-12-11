@@ -1,20 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/DTDs/Podcast-1.0.dtd" xmlns:media="http://search.yahoo.com/mrss/">
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 <channel>
-    <title>TV Shows</title>
-    <description>podcastd TV Shows</description>
-    <itunes:author>podcastd</itunes:author>
+    <title>Podcastd TV Shows</title>
     <link>https://github.com/ryanss/podcastd</link>
-    <itunes:image href="http://www.yourserver.com/YourPodcastPicture.jpg" />
+    <description>Podcastd TV Show Feed</description>
+    <language>en-us</language>
     <pubDate>{{.lastUpdate}}</pubDate>
+    <lastBuildDate>{{.lastUpdate}}</lastBuildDate>
+    <category>TV Shows</category>
+    <generator>podcastd v0.1</generator>
+    <image>
+        <url></url>
+        <title></title>
+        <link></link>
+    </image>
+    <itunes:author>podcastd</itunes:author>
+    <itunes:category>TV Shows</itunes:category>
+    <itunes:image></itunes:image>
+    <itunes:subtitle>Podcastd TV Show Feed</itunes:subtitle>
+    <itunes:summary>Podcastd TV Show Feed</itunes:summary>
 
     {{if $host := .host}}
     {{range .tvshows}}
     <item>
-        <title>{{.ShowTitle}} {{.S00E00}}</title>
-        <description> A description of your podcast episode </description>
-        <pubDate>{{.Aired}}</pubDate>
+        <title>{{.Title}} {{.S00E00}} - {{.EpisodeTitle}}</title>
+        <link>{{.MediaURL $host}}</link>
+        <description>{{.EpisodeDesc}}</description>
+        <category>TV Shows</category>
+        <comments>{{printf "http://%s/" $host}}</comments>
         <enclosure url="{{.MediaURL $host}}" length="{{.Size}}" type="video/mp4" />
+        <guid>{{.MediaURL $host}}</guid>
+        <pubDate>{{.PubDate}}</pubDate>
+        <source>https://github.com/ryanss/podcastd</source>
+        <itunes:author>podcastd</itunes:author>
+        <itunes:image></itunes:image>
+        <itunes:duration>{{.Runtime}}:00</itunes:duration>
+        <itunes:subtitle>{{.Genres}}</itunes:subtitle>
+        <itunes:summary>{{.EpisodeDesc}}</itunes:summary>
     </item>
     {{end}}
     {{end}}

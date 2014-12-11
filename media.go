@@ -60,6 +60,10 @@ func (m Media) MediaURL(host string) string {
 	return Url.String()
 }
 
+func (m Media) S00E00() string {
+	return fmt.Sprintf("S%02dE%02d", m.Season, m.Episode)
+}
+
 func ProcessFile(fp string, timestamp time.Time) {
 	file, _ := os.Stat(fp)
 	fp, _ = path.Split(fp)

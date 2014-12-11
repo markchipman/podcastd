@@ -16,6 +16,7 @@ func main() {
 	http.Handle("/", auth(http.HandlerFunc(Home)))
 	http.Handle("/media/", http.HandlerFunc(MediaFile))
 	http.Handle("/feed/movies", http.HandlerFunc(MovieFeed))
+	http.Handle("/feed/tvshows", http.HandlerFunc(TVShowFeed))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }

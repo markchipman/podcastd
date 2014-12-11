@@ -69,8 +69,8 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 	var tvshows []Media
-	db.Find(&tvshows)
-	row := db.Raw("SELECT episode_aired FROM media ORDER BY episode_aired DESC LIMIT 1;").Row()
+	db.Where(Media{Type: "tvshow"}).Find(&tvshows)
+	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
