@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	xtemplate "text/template"
 	"time"
 )
@@ -22,8 +23,22 @@ var xml = xtemplate.Must(xtemplate.ParseFiles(
 func Home(w http.ResponseWriter, r *http.Request) {
 	var movies []Media
 	db.Where(Media{Type: "movie"}).Find(&movies)
-	var tvshows []Media
-	db.Where(Media{Type: "tvshow"}).Find(&tvshows)
+	type Series struct {
+		Title string
+		Slug  string
+	}
+	var tvshows map[string][]Media
+	tvshows = make(map[string][]Media)
+	rows, _ := db.Raw("SELECT DISTINCT title FROM media WHERE type = ?", "tvshow").Rows()
+	defer rows.Close()
+	for rows.Next() {
+		var title string
+		rows.Scan(&title)
+		slug := strings.ToLower(strings.Replace(title, " ", "-", -1))
+		var shows []Media
+		db.Where(Media{Type: "tvshow", Title: title}).Find(&shows)
+		tvshows[slug] = shows
+	}
 	var audio []Media
 	db.Where(Media{Type: "audio"}).Find(&audio)
 	var video []Media

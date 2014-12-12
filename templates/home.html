@@ -15,7 +15,10 @@
     <style>
       span {
         color: #777;
-        font-size: 90%;
+        font-size: 14px;
+      }
+      .panel-body h4 {
+        margin-bottom: 0px;
       }
     </style>
   </head>
@@ -65,11 +68,36 @@
               </div>
               <div id="tvshows" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="tvshows-heading">
                 <div class="panel-body">
-                  <ul>
-                    {{range .tvshows}}
-                    <li><a href="{{.MediaURL $host}}">{{.Filename}}</a></li>
+                  <div class="panel-group" id="series" role="tablist" aria-multiselectable="true">
+                    {{range $slug, $episodes := .tvshows}}
+                    {{$episode := index $episodes 0}}
+                    <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="{{$slug}}-heading">
+                        <div class="media">
+                          <a class="media-left" data-toggle="collapse" data-parent="#series" href="#{{$slug}}" aria-expanded="true" aria-controls="{{$slug}}">
+                            <img height="120" src="{{$episode.Poster}}">
+                          </a>
+                          <div class="media-body">
+                            <h4 class="media-heading">
+                              <a data-toggle="collapse" data-parent="#series" href="#{{$slug}}" aria-expanded="true" aria-controls="{{$slug}}">{{$episode.Title}}</a>
+                              <span class="pull-right">http://{{$host}}/feed/tvshows/{{$slug}}</span>
+                            </h4>
+                            <p>{{$episode.Desc}} (Runtime: {{$episode.Runtime}} min)</p>
+                            <div class="genres" data-genres="{{$episode.Genres}}"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="{{$slug}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{$slug}}-heading">
+                        <div class="panel-body">
+                          {{range $episodes}}
+                          <h4><a href="{{.MediaURL $host}}">{{.Season}}x{{printf "%02d" .Episode}} {{.EpisodeTitle}}</a> ({{.Aired}})</h4>
+                          <p>{{.EpisodeDesc}} (Runtime: {{.Runtime}} min)</p>
+                          {{end}}
+                        </div>
+                      </div>
+                    </div>
                     {{end}}
-                  </ul>
+                  </div>
                 </div>
               </div>
             </div>

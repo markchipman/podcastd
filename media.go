@@ -55,9 +55,17 @@ func (m Media) PubDate() string {
 	return m.CreatedAt.Format(time.RFC1123)
 }
 
+func (m Media) Aired() string {
+	return m.Released.Format("01/02/2006")
+}
+
 func (m Media) MediaURL(host string) string {
 	Url, _ := url.Parse(fmt.Sprintf("http://%s/media/%d/%s", host, m.Id, m.Filename))
 	return Url.String()
+}
+
+func (m Media) TitleSlug() string {
+	return strings.ToLower(strings.Replace(m.Title, " ", "-", -1))
 }
 
 func (m Media) S00E00() string {
@@ -91,7 +99,7 @@ func ProcessFile(fp string, timestamp time.Time) {
 		media.Season, _ = strconv.Atoi(info[1:3])
 		media.Episode, _ = strconv.Atoi(info[4:])
 		i := re.FindStringIndex(media.Filename)
-		media.Title = strings.Replace(media.Filename[0:i[0]], ".", " ", -1)
+		media.Title = strings.Replace(media.Filename[0:i[0]-1], ".", " ", -1)
 		media.Type = "tvshow"
 		media.ScrapeTVShow()
 	}
