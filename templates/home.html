@@ -13,12 +13,27 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
+      h1 {
+        margin: 0px;
+      }
       span {
         color: #777;
         font-size: 14px;
       }
       .panel-body h4 {
         margin-bottom: 0px;
+      }
+      .panel-body .panel-heading h4 {
+        margin-bottom: 5px;
+      }
+      .pull-right a {
+        margin-left: 5px;
+      }
+      .panel-group {
+        margin: 5px 0px;
+      }
+      body {
+        padding: 20px 0px 50px 0px;
       }
     </style>
   </head>
@@ -27,6 +42,11 @@
       <div class="row">
         <div class="col-xs-12">
           <h1>podcast<u>d</u> feeds</h1>
+          <div class="pull-right">
+            <a href="javascript:$('.panel-collapse[aria-expanded=false]').collapse('show');">Expand All</a>
+            <a href="javascript:$('.panel-collapse[aria-expanded=true]').collapse('hide');">Collapse All</a>
+          </div>
+          <div class="clearfix"></div>
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             <div class="panel panel-default">
               <div class="panel-heading" role="tab" id="movies-heading">
@@ -66,7 +86,7 @@
                   <span class="pull-right">http://{{.host}}/feed/tvshows</span>
                 </h4>
               </div>
-              <div id="tvshows" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="tvshows-heading">
+              <div id="tvshows" class="panel-collapse collapse" role="tabpanel" aria-labelledby="tvshows-heading">
                 <div class="panel-body">
                   <div class="panel-group" id="series" role="tablist" aria-multiselectable="true">
                     {{range $slug, $episodes := .tvshows}}
@@ -140,6 +160,13 @@
               </div>
             </div>
           </div>
+          <div class="pull-left">
+            <a href="#">Back to top</a>
+          </div>
+          <div class="pull-right">
+            <a href="javascript:$('.panel-collapse[aria-expanded=false]').collapse('show');">Expand All</a>
+            <a href="javascript:$('.panel-collapse[aria-expanded=true]').collapse('hide');">Collapse All</a>
+          </div>
         </div>
       </div>
     </div>
@@ -153,6 +180,7 @@
           $(this).html($(this).html() + '<span class="label label-default">' + genres[i] + '</span> ');
         }
       });
+      $('.panel-collapse').collapse('hide');
     </script>
   </body>
 </html>
