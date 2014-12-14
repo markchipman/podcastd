@@ -7,10 +7,12 @@ import (
 )
 
 func main() {
-	updateDB()
-	for _, dir := range config.Media {
-		watchDir(dir)
-	}
+	go func() {
+		updateDB()
+		for _, dir := range config.Media {
+			watchDir(dir)
+		}
+	}()
 
 	auth := httpauth.SimpleBasicAuth(config.Username, config.Password)
 	http.Handle("/", auth(http.HandlerFunc(Home)))
