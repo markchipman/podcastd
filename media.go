@@ -153,6 +153,9 @@ func (m *Media) ScrapeMovie() {
 		m.Genres = m.Genres[:len(m.Genres)-2]
 	}
 	s = doc.Find("span[itemprop=datePublished]").First()
+	if s.Text() == "" {
+		s = doc.Find("#release_date_list span").First()
+	}
 	m.Released, _ = time.ParseInLocation("2006-01-02", s.Text(), time.Local)
 	s = doc.Find("a.poster").First()
 	m.Poster, _ = s.Find("img").Attr("src")
