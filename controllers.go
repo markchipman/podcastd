@@ -68,7 +68,7 @@ func MediaFile(w http.ResponseWriter, r *http.Request) {
 func MovieFeed(w http.ResponseWriter, r *http.Request) {
 	var movies []Media
 	db.Where(Media{Type: "movie"}).Find(&movies)
-	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "movie").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -85,7 +85,7 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 	var tvshows []Media
 	db.Where(Media{Type: "tvshow"}).Find(&tvshows)
-	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "tvshow").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -102,7 +102,7 @@ func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 func AudioFeed(w http.ResponseWriter, r *http.Request) {
 	var audio []Media
 	db.Find(&audio)
-	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "audio").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
@@ -119,7 +119,7 @@ func AudioFeed(w http.ResponseWriter, r *http.Request) {
 func VideoFeed(w http.ResponseWriter, r *http.Request) {
 	var video []Media
 	db.Find(&video)
-	row := db.Raw("SELECT created_at FROM media ORDER BY created_at DESC LIMIT 1;").Row()
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "video").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
