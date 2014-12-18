@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 <channel>
-    <title>Podcastd TV Shows</title>
+    <title>{{.title}}</title>
     <link>https://github.com/ryanss/podcastd</link>
-    <description>Podcastd TV Show Feed</description>
+    <description>{{.desc}}</description>
     <language>en-us</language>
     <pubDate>{{.lastUpdate}}</pubDate>
     <lastBuildDate>{{.lastUpdate}}</lastBuildDate>
     <category>TV Shows</category>
     <generator>podcastd v0.1</generator>
     <image>
-        <url></url>
-        <title></title>
-        <link></link>
+        <url>{{.poster}}</url>
+        <title>{{.title}}</title>
+        <link>http://thetvdb.com</link>
     </image>
     <itunes:author>podcastd</itunes:author>
     <itunes:category>TV Shows</itunes:category>
-    <itunes:image></itunes:image>
-    <itunes:subtitle>Podcastd TV Show Feed</itunes:subtitle>
-    <itunes:summary>Podcastd TV Show Feed</itunes:summary>
+    <itunes:image>{{.poster}}</itunes:image>
+    <itunes:subtitle>{{.title}} - Podcastd Feed</itunes:subtitle>
+    <itunes:summary>{{.title}} - Podcastd Feed</itunes:summary>
 
-    {{if $host := .host}}
-    {{range .tvshows}}
+    {{$host := .host}}
+    {{$poster := .poster}}
+    {{range .episodes}}
     <item>
         <title>{{.Title}} {{.S00E00}} - {{.EpisodeTitle}}</title>
         <link>{{.MediaURL $host}}</link>
@@ -33,12 +34,11 @@
         <pubDate>{{.PubDate}}</pubDate>
         <source>https://github.com/ryanss/podcastd</source>
         <itunes:author>podcastd</itunes:author>
-        <itunes:image></itunes:image>
+        <itunes:image>{{$poster}}</itunes:image>
         <itunes:duration>{{.Runtime}}:00</itunes:duration>
         <itunes:subtitle>{{.EpisodeDesc}}</itunes:subtitle>
         <itunes:summary>{{.EpisodeDesc}}</itunes:summary>
     </item>
-    {{end}}
     {{end}}
 </channel>
 </rss>

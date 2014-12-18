@@ -16,6 +16,7 @@ var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
 var xml = xtemplate.Must(xtemplate.ParseFiles(
 	tmplDir+"movies.xml",
 	tmplDir+"tvshows.xml",
+	tmplDir+"tvseries.xml",
 	tmplDir+"audio.xml",
 	tmplDir+"video.xml",
 ))
@@ -85,8 +86,8 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 	var tvshows []Media
 	db.Where(Media{Type: "tvshow"}).Find(&tvshows)
-	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "tvshow").Row()
 	var lastUpdate time.Time
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "tvshow").Row()
 	row.Scan(&lastUpdate)
 	data := map[string]interface{}{
 		"lastUpdate": lastUpdate.Format(time.RFC1123),
@@ -94,6 +95,28 @@ func TVShowFeed(w http.ResponseWriter, r *http.Request) {
 		"tvshows":    tvshows,
 	}
 	err := xml.ExecuteTemplate(w, "tvshows.xml", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func TVSeriesFeed(w http.ResponseWriter, r *http.Request) {
+	_, slug := path.Split(r.URL.Path)
+	title := strings.Title(strings.Replace(slug, "-", " ", -1))
+	var episodes []Media
+	db.Where(Media{Type: "tvshow", Title: title}).Find(&episodes)
+	var lastUpdate time.Time
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? AND title = ? ORDER BY created_at DESC LIMIT 1;", "tvshow", title).Row()
+	row.Scan(&lastUpdate)
+	data := map[string]interface{}{
+		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
+		"title":      episodes[0].Title,
+		"desc":       episodes[0].Desc,
+		"poster":     episodes[0].Poster,
+		"episodes":   episodes,
+	}
+	err := xml.ExecuteTemplate(w, "tvseries.xml", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
