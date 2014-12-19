@@ -20,6 +20,7 @@ func main() {
 	http.Handle("/feed/movies", http.HandlerFunc(MovieFeed))
 	http.Handle("/feed/tvshows", http.HandlerFunc(TVShowFeed))
 	http.Handle("/feed/tvshows/", http.HandlerFunc(TVSeriesFeed))
+	http.Handle("/feed/audio", http.HandlerFunc(AudioFeed))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }

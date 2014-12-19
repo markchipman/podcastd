@@ -124,7 +124,7 @@ func TVSeriesFeed(w http.ResponseWriter, r *http.Request) {
 
 func AudioFeed(w http.ResponseWriter, r *http.Request) {
 	var audio []Media
-	db.Find(&audio)
+	db.Where(Media{Type: "audio"}).Find(&audio)
 	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "audio").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)

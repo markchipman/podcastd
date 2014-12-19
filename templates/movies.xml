@@ -20,7 +20,7 @@
     <itunes:subtitle>Podcastd Movies Feed</itunes:subtitle>
     <itunes:summary>Podcastd Movies Feed</itunes:summary>
 
-    {{if $host := .host}}
+    {{$host := .host}}
     {{range .movies}}
     <item>
         <title>{{.Title}}</title>
@@ -38,7 +38,6 @@
         <itunes:subtitle>{{.Genres}}</itunes:subtitle>
         <itunes:summary>{{.Desc}}</itunes:summary>
     </item>
-    {{end}}
     {{end}}
 </channel>
 </rss>
