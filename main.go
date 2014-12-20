@@ -21,6 +21,7 @@ func main() {
 	http.Handle("/feed/tvshows", http.HandlerFunc(TVShowFeed))
 	http.Handle("/feed/tvshows/", http.HandlerFunc(TVSeriesFeed))
 	http.Handle("/feed/audio", http.HandlerFunc(AudioFeed))
+	http.Handle("/feed/video", http.HandlerFunc(VideoFeed))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }

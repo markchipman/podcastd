@@ -141,7 +141,7 @@ func AudioFeed(w http.ResponseWriter, r *http.Request) {
 
 func VideoFeed(w http.ResponseWriter, r *http.Request) {
 	var video []Media
-	db.Find(&video)
+	db.Where(Media{Type: "video"}).Find(&video)
 	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "video").Row()
 	var lastUpdate time.Time
 	row.Scan(&lastUpdate)
