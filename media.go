@@ -137,7 +137,7 @@ func ProcessFile(fp string, timestamp time.Time) {
 }
 
 func (m *Media) ScrapeMovie() {
-	searchURL := "https://www.themoviedb.org/search?query=" + m.Title
+	searchURL := "https://www.themoviedb.org/search/movie?query=" + m.Title
 	searchURL = strings.Replace(searchURL, " ", "%20", -1)
 	doc, _ := goquery.NewDocument(searchURL)
 	s := doc.Find("ul.movie li").First()
