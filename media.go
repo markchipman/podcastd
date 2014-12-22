@@ -34,6 +34,7 @@ type Media struct {
 	Runtime      int
 	Genres       string
 	Poster       string
+	Trailer      string
 	Season       int
 	Episode      int
 	EpisodeTitle string
@@ -141,6 +142,9 @@ func (m *Media) ScrapeMovie() {
 	searchURL = strings.Replace(searchURL, " ", "%20", -1)
 	doc, _ := goquery.NewDocument(searchURL)
 	s := doc.Find("ul.movie li").First()
+	if s.Length() == 0 {
+		return
+	}
 	s = s.Find("a").First()
 	link, _ := s.Attr("href")
 	doc, _ = goquery.NewDocument("https://www.themoviedb.org" + link)
@@ -161,6 +165,21 @@ func (m *Media) ScrapeMovie() {
 	m.Poster, _ = s.Find("img").Attr("src")
 	runtime, _ := strconv.ParseInt(doc.Find("#runtime").Text(), 10, 0)
 	m.Runtime = int(runtime)
+
+	// Trailer
+	fmt.Println(m.Title)
+	searchURL = "http://www.fandango.com/search/?mode=Movies&q=" + m.Title
+	searchURL = strings.Replace(searchURL, " ", "%20", -1)
+	doc, _ = goquery.NewDocument(searchURL)
+	s = doc.Find("div.results-detail a").First()
+	link, _ = s.Attr("href")
+	fmt.Println(link)
+	doc, _ = goquery.NewDocument(link)
+	s = doc.Find("span[itemprop=trailer] meta[itemprop=contentUrl]").First()
+	m.Trailer, _ = s.Attr("content")
+	m.Trailer = strings.Replace(m.Trailer, "mobile/", "", -1)
+	m.Trailer = strings.Replace(m.Trailer, "-750.mp4", "-2500.mp4", -1)
+	fmt.Println(m.Trailer)
 }
 
 func (m *Media) ScrapeTVShow() {
