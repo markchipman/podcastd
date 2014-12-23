@@ -70,9 +70,13 @@
                           ({{.Released.Year}})
                         </h4>
                         <p>{{.Desc}} (Runtime: {{.Runtime}} min)</p>
-                        <div class="genres" data-genres="{{.Genres}}"></div>
+                        <div class="genres pull-left" data-genres="{{.Genres}}"></div>
+                        {{if .Trailer}}
+                        <a class="pull-right" href="{{.Trailer}}"><span class="glyphicon glyphicon-film"></span> Watch Trailer</a>
+                        {{end}}
                       </div>
                     </div>
+                    <hr>
                     {{end}}
                 </div>
               </div>
