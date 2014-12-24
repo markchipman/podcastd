@@ -18,6 +18,7 @@ func main() {
 	http.Handle("/", auth(http.HandlerFunc(Home)))
 	http.Handle("/media/", http.HandlerFunc(MediaFile))
 	http.Handle("/feed/movies", http.HandlerFunc(MovieFeed))
+	http.Handle("/feed/trailers", http.HandlerFunc(TrailerFeed))
 	http.Handle("/feed/tvshows", http.HandlerFunc(TVShowFeed))
 	http.Handle("/feed/tvshows/", http.HandlerFunc(TVSeriesFeed))
 	http.Handle("/feed/audio", http.HandlerFunc(AudioFeed))

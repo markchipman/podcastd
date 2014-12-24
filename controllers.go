@@ -15,6 +15,7 @@ var tmplDir = "templates" + string(filepath.Separator)
 var templates = template.Must(template.ParseFiles(tmplDir + "home.html"))
 var xml = xtemplate.Must(xtemplate.ParseFiles(
 	tmplDir+"movies.xml",
+	tmplDir+"trailers.xml",
 	tmplDir+"tvshows.xml",
 	tmplDir+"tvseries.xml",
 	tmplDir+"audio.xml",
@@ -78,6 +79,23 @@ func MovieFeed(w http.ResponseWriter, r *http.Request) {
 		"movies":     movies,
 	}
 	err := xml.ExecuteTemplate(w, "movies.xml", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func TrailerFeed(w http.ResponseWriter, r *http.Request) {
+	var movies []Media
+	db.Where(Media{Type: "movie"}).Find(&movies)
+	row := db.Raw("SELECT created_at FROM media WHERE type = ? ORDER BY created_at DESC LIMIT 1;", "movie").Row()
+	var lastUpdate time.Time
+	row.Scan(&lastUpdate)
+	data := map[string]interface{}{
+		"lastUpdate": lastUpdate.Format(time.RFC1123),
+		"host":       r.Host,
+		"movies":     movies,
+	}
+	err := xml.ExecuteTemplate(w, "trailers.xml", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

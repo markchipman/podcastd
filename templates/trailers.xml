@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<channel>
+    <title>Podcastd Movie Trailers</title>
+    <link>https://github.com/ryanss/podcastd</link>
+    <description>Podcastd Movie Trailer Feed</description>
+    <language>en-us</language>
+    <pubDate>{{.lastUpdate}}</pubDate>
+    <lastBuildDate>{{.lastUpdate}}</lastBuildDate>
+    <category>Movies</category>
+    <generator>podcastd v0.1</generator>
+    <image>
+        <url></url>
+        <title></title>
+        <link></link>
+    </image>
+    <itunes:author>podcastd</itunes:author>
+    <itunes:category>Movies</itunes:category>
+    <itunes:image></itunes:image>
+    <itunes:subtitle>Podcastd Movie Trailer Feed</itunes:subtitle>
+    <itunes:summary>Podcastd Movie Trailer Feed</itunes:summary>
+
+    {{$host := .host}}
+    {{range .movies}}
+    <item>
+        <title>{{.Title}}</title>
+        <link>{{.Trailer}}</link>
+        <description>{{.Desc}}</description>
+        <category>Movies</category>
+        <comments>{{printf "http://%s/" $host}}</comments>
+        <enclosure url="{{.Trailer}}" type="video/mp4" />
+        <guid>{{.Trailer}}</guid>
+        <pubDate>{{.PubDate}}</pubDate>
+        <source>https://github.com/ryanss/podcastd</source>
+        <itunes:author>podcastd</itunes:author>
+        <itunes:image></itunes:image>
+        <itunes:duration>{{.Runtime}}:00</itunes:duration>
+        <itunes:subtitle>{{.Genres}}</itunes:subtitle>
+        <itunes:summary>{{.Desc}}</itunes:summary>
+    </item>
+    {{end}}
+</channel>
+</rss>

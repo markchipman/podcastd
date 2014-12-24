@@ -59,6 +59,14 @@
               </div>
               <div id="movies" class="panel-collapse collapse" role="tabpanel" aria-labelledby="movies-heading">
                 <div class="panel-body">
+                  <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="trailers-heading">
+                      <h4 class="panel-title">
+                          Movie Trailers
+                        <span class="pull-right">http://{{.host}}/feed/trailers</span>
+                      </h4>
+                    </div>
+                  </div>
                     {{range .movies}}
                     <div class="media">
                       <a class="media-left" href="http://{{$host}}/movies/{{.Id}}">
