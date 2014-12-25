@@ -13,9 +13,6 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-      h1 {
-        margin: 0px;
-      }
       span {
         color: #777;
         font-size: 14px;
@@ -42,10 +39,6 @@
       <div class="row">
         <div class="col-xs-12">
           <h1>podcast<u>d</u> feeds</h1>
-          <div class="pull-right">
-            <a href="javascript:$('.panel-collapse[aria-expanded=false]').collapse('show');">Expand All</a>
-            <a href="javascript:$('.panel-collapse[aria-expanded=true]').collapse('hide');">Collapse All</a>
-          </div>
           <div class="clearfix"></div>
           <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             <div class="panel panel-default">
@@ -172,13 +165,7 @@
               </div>
             </div>
           </div>
-          <div class="pull-left">
-            <a href="#">Back to top</a>
-          </div>
-          <div class="pull-right">
-            <a href="javascript:$('.panel-collapse[aria-expanded=false]').collapse('show');">Expand All</a>
-            <a href="javascript:$('.panel-collapse[aria-expanded=true]').collapse('hide');">Collapse All</a>
-          </div>
+          <a class="pull-right" href="#">Back to top</a>
         </div>
       </div>
     </div>
@@ -192,7 +179,7 @@
           $(this).html($(this).html() + '<span class="label label-default">' + genres[i] + '</span> ');
         }
       });
-      $('.panel-collapse').collapse('hide');
+      //$('.panel-collapse').collapse('hide');
     </script>
   </body>
 </html>
