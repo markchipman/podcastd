@@ -120,6 +120,16 @@ func ProcessFile(fp string, timestamp time.Time) {
 			index = iExt[0]
 		}
 		media.Title = strings.Replace(string(filename[0:index]), ".", " ", -1)
+		re = regexp.MustCompile(`^[A-Z]\s`)
+		a := re.FindString(media.Title)
+		if a != "" {
+			media.Title = strings.Replace(media.Title, a, a[0:len(a)-1]+".", 1)
+		}
+		re = regexp.MustCompile(`\.[A-Z]\s`)
+		a = re.FindString(media.Title)
+		if a != "" {
+			media.Title = strings.Replace(media.Title, a, a[0:len(a)-1]+".", 1)
+		}
 		if iYear != nil {
 			media.Released, _ = time.Parse("2006", string(filename[iYear[0]+1:iYear[1]])+"-01-01")
 		}
