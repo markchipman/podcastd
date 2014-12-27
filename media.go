@@ -6,6 +6,7 @@ import (
 	"github.com/garfunkel/go-tvdb"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/ryanss/gorm"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -177,19 +178,23 @@ func (m *Media) ScrapeMovie() {
 	m.Runtime = int(runtime)
 
 	// Trailer
-	fmt.Println(m.Title)
 	searchURL = "http://www.fandango.com/search/?mode=Movies&q=" + m.Title
 	searchURL = strings.Replace(searchURL, " ", "%20", -1)
 	doc, _ = goquery.NewDocument(searchURL)
 	s = doc.Find("div.results-detail a").First()
 	link, _ = s.Attr("href")
-	fmt.Println(link)
 	doc, _ = goquery.NewDocument(link)
 	s = doc.Find("span[itemprop=trailer] meta[itemprop=contentUrl]").First()
-	m.Trailer, _ = s.Attr("content")
-	m.Trailer = strings.Replace(m.Trailer, "mobile/", "", -1)
-	m.Trailer = strings.Replace(m.Trailer, "-750.mp4", "-2500.mp4", -1)
-	fmt.Println(m.Trailer)
+	trailerURL, _ := s.Attr("content")
+	if trailerURL != "" {
+		m.Trailer = trailerURL
+		m.Trailer = strings.Replace(m.Trailer, "mobile/", "", -1)
+		m.Trailer = strings.Replace(m.Trailer, "-750.mp4", "-2500.mp4", -1)
+		resp, _ := http.Head(m.Trailer)
+		if resp.StatusCode != 200 {
+			m.Trailer = trailerURL
+		}
+	}
 }
 
 func (m *Media) ScrapeTVShow() {
