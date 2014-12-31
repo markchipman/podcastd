@@ -45,3 +45,10 @@ go get -u github.com/pilu/fresh
 cd /path/to/podcastd
 fresh -c fresh.conf
 ```
+
+
+License
+-------
+
+Code is availabe according to the MIT License
+(see [LICENSE](https://github.com/ryanss/podcastd/raw/master/LICENSE)).
