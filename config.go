@@ -17,10 +17,13 @@ type Config struct {
 }
 
 func loadConfigFile() Config {
-	file, _ := os.Open("config.json")
+	file, err := os.Open("config.json")
+	if err != nil {
+		panic(err)
+	}
 	decoder := json.NewDecoder(file)
 	config := Config{}
-	err := decoder.Decode(&config)
+	err = decoder.Decode(&config)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
